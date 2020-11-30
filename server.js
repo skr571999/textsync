@@ -13,12 +13,12 @@ const DATA = {
   content: "",
 };
 
-// app.get("/", async (req, res) => {
-//   res.send({ message: "Server Running ..." });
-// });
-
 app.get("/*", function (req, res) {
   res.sendFile(path.join(__dirname + "/website/build/index.html"));
+});
+
+app.get("/api", async (req, res) => {
+  res.send({ message: "Server Running ..." });
 });
 
 app.post("/api/sync", async (req, res) => {
