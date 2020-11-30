@@ -1,6 +1,7 @@
 import { DataType } from "../App";
 
-const BASE_URL = "http://localhost:8000/sync";
+// const BASE_URL = "http://localhost:8000/sync";
+const BASE_URL = "https://copypaste01.herokuapp.com/";
 
 interface SyncDataResponseType {
   message: string;
