@@ -14,9 +14,9 @@ const DATA = {
   content: "",
 };
 
-app.get("/*", function (req, res) {
-  res.sendFile(path.join(__dirname + "/website/build/index.html"));
-});
+// app.get("/*", function (req, res) {
+//   res.sendFile(path.join(__dirname + "/website/build/index.html"));
+// });
 
 app.get("/api", async (req, res) => {
   res.send({ message: "Server Running ..." });
