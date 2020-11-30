@@ -13,11 +13,15 @@ const DATA = {
   content: "",
 };
 
-app.get("/", async (req, res) => {
-  res.send({ message: "Server Running ..." });
+// app.get("/", async (req, res) => {
+//   res.send({ message: "Server Running ..." });
+// });
+
+app.get("/*", function (req, res) {
+  res.sendFile(path.join(__dirname + "/website/build/index.html"));
 });
 
-app.post("/sync", async (req, res) => {
+app.post("/api/sync", async (req, res) => {
   console.log("Body : ", req.body);
   const lastUpdate = req.body.lastUpdate;
   const content = req.body.content;
