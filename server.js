@@ -11,7 +11,7 @@ app.use(cors());
 const PORT = process.env.PORT || 8000;
 const DATA = {
   lastUpdate: new Date().toString(),
-  content: "",
+  value: "",
 };
 
 // app.get("/*", function (req, res) {
@@ -24,11 +24,12 @@ app.get("/api", async (req, res) => {
 
 app.post("/api/sync", async (req, res) => {
   console.log("Body : ", req.body);
+
   const lastUpdate = req.body.lastUpdate;
-  const content = req.body.content;
+  const value = req.body.value;
+
   if (Date.parse(DATA.lastUpdate) < Date.parse(lastUpdate)) {
-    console.log("Updating");
-    DATA.content = content;
+    DATA.value = value;
     DATA.lastUpdate = lastUpdate;
   }
   res.send({ message: "success", data: DATA });

@@ -1,17 +1,22 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
+import NavBar from "./components/NavBar";
+import TextArea from "./components/TextArea";
 import { syncData } from "./services/apis";
-
-export interface DataType {
-  lastUpdate: string;
-  content: string;
-}
+import { DataType, ThemeType } from "./services/model";
 
 const App = () => {
   const [data, setData] = useState<DataType>({
     lastUpdate: "",
-    content: "",
+    value: "",
   });
+
+  const [theme, setTheme] = useState<ThemeType>({
+    color: "#26262c",
+    backgroundColor: "#eaeaea",
+  });
+
+  const [isSyncing, setIsSyncing] = useState(true);
 
   useEffect(() => {
     handleSync();
@@ -23,56 +28,38 @@ const App = () => {
 
     setData((prev) => {
       const _prev = { ...prev };
-      _prev.content = value;
+      _prev.value = value;
       _prev.lastUpdate = new Date().toString();
       return _prev;
     });
   };
 
-  const handleSync = async () => {
-    const responseData = await syncData(data);
+  const handleSync = () => {
+    (async () => {
+      setIsSyncing(true);
+      const response = await syncData(data);
+      console.log("Response : ", response);
 
-    if (data.lastUpdate !== responseData.data.lastUpdate) {
-      setData((prev) => {
-        const _prev = { ...prev };
-        _prev.content = responseData.data.content;
-        _prev.lastUpdate = responseData.data.lastUpdate;
-        return _prev;
-      });
-    }
+      if (data.lastUpdate !== response.data.lastUpdate) {
+        setData((prev) => {
+          const _prev = { ...prev };
+          _prev.value = response.data.value;
+          _prev.lastUpdate = response.data.lastUpdate;
+          return _prev;
+        });
+      }
+      setIsSyncing(false);
+    })();
+  };
 
-    console.log("Response : ", responseData);
+  const handleToggleTheme = () => {
+    setTheme({ backgroundColor: theme.color, color: theme.backgroundColor });
   };
 
   return (
     <div>
-      <nav className="navbar navbar-dark bg-dark" style={{ height: "7vh" }}>
-        <a className="navbar-brand" href="/" style={{ fontSize: "2.8vh" }}>
-          <b>COPY</b>Paste
-        </a>
-        <div>
-          <button className="btn btn-light btn-sm" onClick={handleSync}>
-            Sync
-          </button>
-        </div>
-      </nav>
-      <div style={{ height: "93vh" }}>
-        <textarea
-          name="data"
-          id="dataContainer"
-          style={{
-            minWidth: "100%",
-            minHeight: "100%",
-            resize: "none",
-            border: "none",
-          }}
-          cols={30}
-          rows={10}
-          value={data.content}
-          onChange={handleChange}
-          placeholder="Paste here..."
-        ></textarea>
-      </div>
+      <NavBar {...{ handleSync, handleToggleTheme, isSyncing, theme }} />
+      <TextArea {...{ handleChange, theme, value: data.value }} />
     </div>
   );
 };

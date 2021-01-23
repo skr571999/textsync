@@ -1,18 +1,11 @@
-import { DataType } from "../App";
-
-// const BASE_URL = "http://localhost:8000/sync";
-const BASE_URL = "https://copypaste01.herokuapp.com/api/";
-
-interface SyncDataResponseType {
-  message: string;
-  data: DataType;
-}
+import { config } from "../constants";
+import { DataType, SyncDataResponseType } from "./model";
 
 export const syncData = async (
   data: DataType
 ): Promise<SyncDataResponseType> => {
   try {
-    const response = await fetch(BASE_URL + "sync", {
+    const response = await fetch(config.BASE_URL + "sync", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
