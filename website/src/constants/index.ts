@@ -1,5 +1,5 @@
 const prod = {
-  BASE_URL: "https://copypaste01.herokuapp.com/api/",
+  BASE_URL: "https://textsync.herokuapp.com/api/",
 };
 
 const dev = {

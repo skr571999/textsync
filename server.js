@@ -14,9 +14,13 @@ const DATA = {
   value: "",
 };
 
-// app.get("/*", function (req, res) {
-//   res.sendFile(path.join(__dirname + "/website/build/index.html"));
+// app.use(express.static(path.join(__dirname, "website", "build")));
+
+// app.get("/", function (req, res) {
+//   res.sendFile(path.join(__dirname, "website", "build", "index.html"));
 // });
+
+// app.listen(9000);
 
 app.get("/api", async (req, res) => {
   res.send({ message: "Server Running ..." });
