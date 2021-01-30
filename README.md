@@ -34,3 +34,18 @@ heroku create APP_NAME
 # to deploy code to heroku
 git push heroku main
 ```
+
+## TODO
+
+- Update the logo
+- Handle Connection disconnect bug
+  - to update the count of user on disconnect
+- Add a Screen Recording in ReadMe with 2 screens to show the feature of real-time
+- Add Status to show if connected to server or not
+- Add Multiple Document Support
+- Add Document Save Functionality to DB
+- Fix Height Responsiveness
+- Fix the UI(NavBar Buttons)
+- Fix Text syncing when typed fast
+- Add theme setting save to Local storage
+- Convert to PWA and add support to work OffLine
