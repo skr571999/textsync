@@ -2,13 +2,16 @@ import React, { useEffect, useState } from "react";
 import "./App.css";
 import NavBar from "./components/NavBar";
 import TextArea from "./components/TextArea";
-import { syncData } from "./services/apis";
-import { DataType, ThemeType } from "./services/model";
+import { DataType, SuccessDataResponseType, ThemeType } from "./services/model";
+
+import { io, Socket } from "socket.io-client";
+import { config } from "./constants";
 
 const App = () => {
   const [data, setData] = useState<DataType>({
     lastUpdate: "",
     value: "",
+    users: 0,
   });
 
   const [theme, setTheme] = useState<ThemeType>({
@@ -16,10 +19,24 @@ const App = () => {
     backgroundColor: "#eaeaea",
   });
 
-  const [isSyncing, setIsSyncing] = useState(true);
+  const [socket, setSocket] = useState<Socket>();
 
   useEffect(() => {
-    handleSync();
+    const _socket = io(config.BASE_URL);
+    setSocket(_socket);
+    _socket.emit("getText");
+    _socket.on("success", (response: SuccessDataResponseType) => {
+      if (data.lastUpdate !== response.data.lastUpdate) {
+        setData((prev) => {
+          const _prev = { ...prev };
+          _prev.value = response.data.value;
+          _prev.lastUpdate = response.data.lastUpdate;
+          _prev.users = response.data.users;
+
+          return _prev;
+        });
+      }
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -30,35 +47,30 @@ const App = () => {
       const _prev = { ...prev };
       _prev.value = value;
       _prev.lastUpdate = new Date().toString();
+      if (socket) socket.emit("updateText", _prev);
       return _prev;
     });
-  };
-
-  const handleSync = () => {
-    (async () => {
-      setIsSyncing(true);
-      const response = await syncData(data);
-      console.log("Response : ", response);
-
-      if (data.lastUpdate !== response.data.lastUpdate) {
-        setData((prev) => {
-          const _prev = { ...prev };
-          _prev.value = response.data.value;
-          _prev.lastUpdate = response.data.lastUpdate;
-          return _prev;
-        });
-      }
-      setIsSyncing(false);
-    })();
   };
 
   const handleToggleTheme = () => {
     setTheme({ backgroundColor: theme.color, color: theme.backgroundColor });
   };
 
+  const handleClearAll = () => {
+    setData((prev) => {
+      const _prev = { ...prev };
+      _prev.value = "";
+      _prev.lastUpdate = new Date().toString();
+      if (socket) socket.emit("updateText", _prev);
+      return _prev;
+    });
+  };
+
   return (
     <div>
-      <NavBar {...{ handleSync, handleToggleTheme, isSyncing, theme }} />
+      <NavBar
+        {...{ handleToggleTheme, theme, users: data.users, handleClearAll }}
+      />
       <TextArea {...{ handleChange, theme, value: data.value }} />
     </div>
   );

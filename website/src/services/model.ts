@@ -6,9 +6,10 @@ export interface ThemeType {
 export interface DataType {
   lastUpdate: string;
   value: string;
+  users: number;
 }
 
-export interface SyncDataResponseType {
-  message: string;
+export interface SuccessDataResponseType {
+  status: string;
   data: DataType;
 }

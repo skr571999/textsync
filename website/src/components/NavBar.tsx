@@ -2,17 +2,17 @@ import React from "react";
 import { ThemeType } from "../services/model";
 
 interface NavBarProps {
-  handleSync: () => void;
   handleToggleTheme: () => void;
+  handleClearAll: () => void;
   theme: ThemeType;
-  isSyncing: boolean;
+  users: number;
 }
 
 const NavBar: React.FC<NavBarProps> = ({
-  handleSync,
   handleToggleTheme,
   theme,
-  isSyncing,
+  users,
+  handleClearAll,
 }) => {
   return (
     <nav
@@ -22,27 +22,29 @@ const NavBar: React.FC<NavBarProps> = ({
       <a className="navbar-brand" href="/" style={{ fontSize: "3vh" }}>
         TEXT<b>SYNC</b>
       </a>
-      <div>
-        {isSyncing && (
-          <div
-            className="spinner-border text-light"
-            role="status"
-            style={{ width: "1.5rem", height: "1.5rem", borderWidth: ".15rem" }}
-          ></div>
-        )}
+      <div style={{ fontSize: "1.2rem" }}>
+        <span
+          onClick={handleClearAll}
+          style={{ cursor: "pointer", marginRight: "1rem" }}
+        >
+          🧹
+        </span>
+        <span style={{ color: "white" }}>{users} 🧑</span>
+        <span
+          style={{
+            margin: "0 1rem",
+            textShadow: "0 0 5px yellow",
+          }}
+        >
+          ⚡
+        </span>
+
         <span
           onClick={handleToggleTheme}
-          style={{ cursor: "pointer", margin: "0 1rem", fontSize: "3vh" }}
+          style={{ cursor: "pointer", marginRight: "1rem" }}
         >
           {theme.color === "#26262c" ? "🌙" : "☀"}
         </span>
-        <button
-          className="btn btn-light btn-sm"
-          onClick={handleSync}
-          style={{ fontSize: "2.5vh" }}
-        >
-          Sync
-        </button>
       </div>
     </nav>
   );
