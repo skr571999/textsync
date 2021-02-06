@@ -1,27 +1,25 @@
 import React, { useEffect, useState } from "react";
+import { io, Socket } from "socket.io-client";
+
 import "./App.css";
 import NavBar from "./components/NavBar";
 import TextArea from "./components/TextArea";
-import { DataType, SuccessDataResponseType, ThemeType } from "./services/model";
-
-import { io, Socket } from "socket.io-client";
-import { config } from "./constants";
+import {
+  DataValueType,
+  SuccessDataResponseType,
+  ThemeType,
+} from "./services/model";
+import { config, defaultDataValue, themeColor } from "./constants";
 
 const App = () => {
-  const [data, setData] = useState<DataType>({
-    lastUpdate: "",
-    value: "",
-    users: 0,
-  });
-
-  const [theme, setTheme] = useState<ThemeType>({
-    color: "#26262c",
-    backgroundColor: "#eaeaea",
-  });
-
+  const [data, setData] = useState<DataValueType>(defaultDataValue);
+  const [theme, setTheme] = useState<ThemeType>(themeColor.light);
   const [socket, setSocket] = useState<Socket>();
 
   useEffect(() => {
+    const _theme = localStorage.getItem("theme");
+    if (_theme === "dark") setTheme(themeColor.dark);
+
     const _socket = io(config.BASE_URL);
     setSocket(_socket);
     _socket.emit("getText");
@@ -54,6 +52,12 @@ const App = () => {
 
   const handleToggleTheme = () => {
     setTheme({ backgroundColor: theme.color, color: theme.backgroundColor });
+    const _theme = localStorage.getItem("theme");
+    if (_theme === "dark") {
+      localStorage.setItem("theme", "light");
+    } else {
+      localStorage.setItem("theme", "dark");
+    }
   };
 
   const handleClearAll = () => {

@@ -3,7 +3,7 @@ export interface ThemeType {
   backgroundColor: string;
 }
 
-export interface DataType {
+export interface DataValueType {
   lastUpdate: string;
   value: string;
   users: number;
@@ -11,5 +11,5 @@ export interface DataType {
 
 export interface SuccessDataResponseType {
   status: string;
-  data: DataType;
+  data: DataValueType;
 }

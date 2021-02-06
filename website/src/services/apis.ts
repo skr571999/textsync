@@ -1,8 +1,8 @@
 import { config } from "../constants";
-import { DataType, SuccessDataResponseType } from "./model";
+import { DataValueType, SuccessDataResponseType } from "./model";
 
 export const setData = async (
-  data: DataType
+  data: DataValueType
 ): Promise<SuccessDataResponseType> => {
   try {
     const response = await fetch(config.BASE_URL + "/api/data", {
