@@ -1,6 +1,6 @@
-# TextSync
+# LiveCollab
 
-For sharing text in real time using `websocket`. Build using `ReactJS` and `NodeJS` (`ExpressJS`)
+For having a live Collaborating. Build using `ReactJS` and `ExpressJS` with websocket
 
 ## Cloning and Installing
 
@@ -41,19 +41,3 @@ heroku create APP_NAME # IF FOR FIRST TIME
 
 git push heroku main # to deploy code to heroku
 ```
-
-## TODO
-
-- [x] Update the logo
-- [x] Save theme to `localstorage`
-- [ ] Handle Connection disconnect bug
-  - To update the count of user on disconnect
-- [ ] Add a Screen Recording in ReadMe with 2 screens to show the feature of real-time
-- [ ] Add Status to show if connected to server or not
-- [ ] Add Multiple Document Support
-- [ ] Add Document Save Functionality to DB
-- [ ] Fix Height Responsiveness
-- [ ] Fix the UI(NavBar Buttons)
-- [ ] Fix Text syncing when typing fast
-- [ ] Convert to PWA and add support to work OffLine
-- [ ] Add button to Copy all text
