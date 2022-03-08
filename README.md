@@ -7,9 +7,10 @@ For having a live Collaborating. Build using `ReactJS` and `ExpressJS` with webs
 ```sh
 # to clone the REPO
 git clone REPO_URL
+cd FOLDER_NAME
 
 # for installing server dependencies
-cd FOLDER_NAME
+cd server
 npm install
 
 # for installing website dependencies
@@ -20,13 +21,13 @@ yarn install
 ## Starting App Locally
 
 ```sh
-# To run ExpressJS server
+# To Start ExpressJS server
+cd server
 npm run dev
 
-# To run ReactJS server
+# To Start ReactJS server
 cd website
 npm start
-
 ```
 
 ## Deploying/Building
