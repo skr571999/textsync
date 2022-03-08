@@ -14,7 +14,7 @@ export const setData = async (
     });
 
     return response.json();
-  } catch (error) {
+  } catch (error: any) {
     console.log("Error : ", error);
     return error;
   }
@@ -24,7 +24,7 @@ export const getData = async (): Promise<SuccessDataResponseType> => {
   try {
     const response = await fetch(config.BASE_URL + "/api/data");
     return response.json();
-  } catch (error) {
+  } catch (error: any) {
     console.log("Error : ", error);
     return error;
   }
