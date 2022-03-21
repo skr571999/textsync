@@ -18,7 +18,7 @@ export const defaultDataValue: DataValueType = {
 };
 
 const prod = {
-  BASE_URL: "https://textsync.herokuapp.com",
+  BASE_URL: process.env.SERVER_URL || "",
 };
 
 const dev = {

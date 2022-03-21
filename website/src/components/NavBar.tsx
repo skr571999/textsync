@@ -20,7 +20,7 @@ const NavBar: React.FC<NavBarProps> = ({
       style={{ maxHeight: "10vh", top: "0", width: "100%" }}
     >
       <a className="navbar-brand" href="/" style={{ fontSize: "3vh" }}>
-        TEXT<b>SYNC</b>
+        {document.title}
       </a>
       <div style={{ fontSize: "1.2rem" }}>
         <span
