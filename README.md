@@ -10,7 +10,6 @@ git clone REPO_URL
 cd FOLDER_NAME
 
 # for installing server dependencies
-cd server
 npm install
 
 # for installing website dependencies
@@ -22,7 +21,6 @@ yarn install
 
 ```sh
 # To Start ExpressJS server
-cd server
 npm run dev
 
 # To Start ReactJS server
@@ -30,15 +28,7 @@ cd website
 npm start
 ```
 
-## Deploying/Building
+## Deployment
 
-```sh
-# To deploy website to netlify(Manual Deploy)
-cd website
-npm run build
-
-# To deploy server to heroku(using heroku CLI)
-heroku create APP_NAME # IF FOR FIRST TIME
-
-git push heroku main # to deploy code to heroku
-```
+- Website - Netlify
+- Server - Heroku
