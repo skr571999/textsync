@@ -18,7 +18,7 @@ export const defaultDataValue: DataValueType = {
 };
 
 const prod = {
-  BASE_URL: process.env.SERVER_URL || "",
+  BASE_URL: process.env.REACT_APP_SERVER_URL || "",
 };
 
 const dev = {
