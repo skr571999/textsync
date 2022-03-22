@@ -8,7 +8,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 const DATA = {
-  lastUpdate: new Date().toString(),
+  lastUpdate: new Date().getTime(),
   value: "",
   users: 0,
 };
@@ -49,9 +49,8 @@ io.on("connection", (socket) => {
   socket.on("updateText", (data) => {
     const lastUpdate = data.lastUpdate;
     const value = data.value;
-    // console.log("UPDATED : ", DATA.value);
 
-    if (Date.parse(DATA.lastUpdate) < Date.parse(lastUpdate)) {
+    if (DATA.lastUpdate < lastUpdate) {
       DATA.value = value;
       DATA.lastUpdate = lastUpdate;
     }

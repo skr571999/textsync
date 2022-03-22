@@ -44,7 +44,7 @@ const App = () => {
     setData((prev) => {
       const _prev = { ...prev };
       _prev.value = value;
-      _prev.lastUpdate = new Date().toString();
+      _prev.lastUpdate = new Date().getTime();
       if (socket) socket.emit("updateText", _prev);
       return _prev;
     });
@@ -64,7 +64,7 @@ const App = () => {
     setData((prev) => {
       const _prev = { ...prev };
       _prev.value = "";
-      _prev.lastUpdate = new Date().toString();
+      _prev.lastUpdate = new Date().getTime();
       if (socket) socket.emit("updateText", _prev);
       return _prev;
     });
