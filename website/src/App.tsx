@@ -10,9 +10,11 @@ import {
   ThemeType,
 } from "./services/model";
 import { config, defaultDataValue, themeColor } from "./constants";
+import ConnectingBanner from "./components/ConnectingBanner";
 
 const App = () => {
   const [data, setData] = useState<DataValueType>(defaultDataValue);
+  const [isServerConnected, setIsServerConnected] = useState(false);
   const [theme, setTheme] = useState<ThemeType>(themeColor.light);
   const [socket, setSocket] = useState<Socket>();
 
@@ -34,6 +36,14 @@ const App = () => {
           return _prev;
         });
       }
+    });
+
+    _socket.on("connect", () => {
+      setIsServerConnected(true);
+    });
+
+    _socket.on("disconnect", () => {
+      setIsServerConnected(false);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -72,10 +82,16 @@ const App = () => {
 
   return (
     <div>
-      <NavBar
-        {...{ handleToggleTheme, theme, users: data.users, handleClearAll }}
-      />
-      <TextArea {...{ handleChange, theme, value: data.value }} />
+      {isServerConnected ? (
+        <>
+          <NavBar
+            {...{ handleToggleTheme, theme, users: data.users, handleClearAll }}
+          />
+          <TextArea {...{ handleChange, theme, value: data.value }} />
+        </>
+      ) : (
+        <ConnectingBanner />
+      )}
     </div>
   );
 };
