@@ -80,12 +80,22 @@ const App = () => {
     });
   };
 
+  const handleCopyAll = () => {
+    navigator.clipboard.writeText(data.value);
+  };
+
   return (
     <div>
       {isServerConnected ? (
         <>
           <NavBar
-            {...{ handleToggleTheme, theme, users: data.users, handleClearAll }}
+            {...{
+              handleToggleTheme,
+              theme,
+              users: data.users,
+              handleClearAll,
+              handleCopyAll,
+            }}
           />
           <TextArea {...{ handleChange, theme, value: data.value }} />
         </>

@@ -4,6 +4,7 @@ import { ThemeType } from "../services/model";
 interface NavBarProps {
   handleToggleTheme: () => void;
   handleClearAll: () => void;
+  handleCopyAll: () => void;
   theme: ThemeType;
   users: number;
 }
@@ -13,6 +14,7 @@ const NavBar: React.FC<NavBarProps> = ({
   theme,
   users,
   handleClearAll,
+  handleCopyAll,
 }) => {
   return (
     <nav
@@ -29,16 +31,15 @@ const NavBar: React.FC<NavBarProps> = ({
         >
           🧹
         </span>
-        <span style={{ color: "white" }}>{users} 🧑</span>
         <span
-          style={{
-            margin: "0 1rem",
-            textShadow: "0 0 5px yellow",
-          }}
+          onClick={handleCopyAll}
+          style={{ cursor: "pointer", marginRight: "1rem" }}
         >
-          ⚡
+          ✂️
         </span>
-
+        <span style={{ color: "white", border: "1px solid grey" }}>
+          {users} 🧑
+        </span>
         <span
           onClick={handleToggleTheme}
           style={{ cursor: "pointer", marginRight: "1rem" }}
