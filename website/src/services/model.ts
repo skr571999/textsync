@@ -4,7 +4,7 @@ export interface ThemeType {
 }
 
 export interface DataValueType {
-  lastUpdate: string;
+  lastUpdate: number;
   value: string;
   users: number;
 }

@@ -12,7 +12,7 @@ export const themeColor = {
 };
 
 export const defaultDataValue: DataValueType = {
-  lastUpdate: "",
+  lastUpdate: new Date().getTime(),
   value: "",
   users: 0,
 };

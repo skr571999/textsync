@@ -10,9 +10,11 @@ import {
   ThemeType,
 } from "./services/model";
 import { config, defaultDataValue, themeColor } from "./constants";
+import ConnectingBanner from "./components/ConnectingBanner";
 
 const App = () => {
   const [data, setData] = useState<DataValueType>(defaultDataValue);
+  const [isServerConnected, setIsServerConnected] = useState(false);
   const [theme, setTheme] = useState<ThemeType>(themeColor.light);
   const [socket, setSocket] = useState<Socket>();
 
@@ -35,6 +37,14 @@ const App = () => {
         });
       }
     });
+
+    _socket.on("connect", () => {
+      setIsServerConnected(true);
+    });
+
+    _socket.on("disconnect", () => {
+      setIsServerConnected(false);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -44,7 +54,7 @@ const App = () => {
     setData((prev) => {
       const _prev = { ...prev };
       _prev.value = value;
-      _prev.lastUpdate = new Date().toString();
+      _prev.lastUpdate = new Date().getTime();
       if (socket) socket.emit("updateText", _prev);
       return _prev;
     });
@@ -64,18 +74,34 @@ const App = () => {
     setData((prev) => {
       const _prev = { ...prev };
       _prev.value = "";
-      _prev.lastUpdate = new Date().toString();
+      _prev.lastUpdate = new Date().getTime();
       if (socket) socket.emit("updateText", _prev);
       return _prev;
     });
   };
 
+  const handleCopyAll = () => {
+    navigator.clipboard.writeText(data.value);
+  };
+
   return (
     <div>
-      <NavBar
-        {...{ handleToggleTheme, theme, users: data.users, handleClearAll }}
-      />
-      <TextArea {...{ handleChange, theme, value: data.value }} />
+      {isServerConnected ? (
+        <>
+          <NavBar
+            {...{
+              handleToggleTheme,
+              theme,
+              users: data.users,
+              handleClearAll,
+              handleCopyAll,
+            }}
+          />
+          <TextArea {...{ handleChange, theme, value: data.value }} />
+        </>
+      ) : (
+        <ConnectingBanner />
+      )}
     </div>
   );
 };
