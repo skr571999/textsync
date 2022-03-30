@@ -42,7 +42,7 @@ const io = socketIO(server, {
 
 io.on("connection", (socket) => {
   console.log("Client connected");
-  DATA.users++;
+  DATA.users = io.engine.clientsCount;
 
   socket.broadcast.emit("success", { status: "success", data: DATA });
 
@@ -62,7 +62,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    DATA.users--;
+    DATA.users = io.engine.clientsCount;
     socket.broadcast.emit("success", { status: "success", data: DATA });
     console.log("Client disconnected");
   });
