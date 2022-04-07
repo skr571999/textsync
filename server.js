@@ -56,7 +56,7 @@ io.on("connection", (socket) => {
       DATA[room].lastUpdate = lastUpdate;
     }
 
-    io.to(room).emit("response", {
+    socket.broadcast.to(room).emit("response", {
       status: "success",
       data: DATA[room],
     });
@@ -72,12 +72,22 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("join", (id) => {
-    console.log("JOin ", id);
-    ++DATA[id].users;
-    socket.join(id);
-    socket.room = id;
-    io.to(id).emit("response", { status: "success", users: DATA[id].users });
+  socket.on("join", (roomId) => {
+    console.log("JOin ", roomId);
+    if (!DATA[roomId]) {
+      DATA[roomId] = {
+        value: "",
+        lastUpdate: "",
+        users: 0,
+      };
+    }
+    ++DATA[roomId].users;
+    socket.join(roomId);
+    socket.room = roomId;
+    io.to(roomId).emit("response", {
+      status: "success",
+      users: DATA[roomId].users,
+    });
   });
 
   socket.on("room", () => {
