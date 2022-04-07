@@ -23,6 +23,12 @@ app.get("/", async (req, res) => {
 
 const server = app.listen(PORT, () => console.log(`Serving on ${PORT}`));
 
+const generateRandomText = (length) => {
+  return Math.random()
+    .toString(36)
+    .substring(2, 2 + length);
+};
+
 const io = socketIO(server, {
   cors: {
     origin: "*",
@@ -32,17 +38,22 @@ const io = socketIO(server, {
 io.on("connection", (socket) => {
   console.log("Client connected");
 
-  if (!DATA[socket.id]) {
-    DATA[socket.id] = {
+  const roomId = generateRandomText(6);
+
+  if (!DATA[roomId]) {
+    DATA[roomId] = {
       value: "",
       lastUpdate: "",
       users: 1,
     };
   }
 
-  io.to(socket.id).emit("response", {
+  socket.join(roomId);
+  socket.roomId = roomId;
+
+  socket.emit("response", {
     status: "success",
-    data: DATA[socket.id],
+    data: DATA[roomId],
   });
 
   socket.on("updateText", (data) => {
@@ -82,20 +93,22 @@ io.on("connection", (socket) => {
       };
     }
     ++DATA[roomId].users;
+    socket.leave(socket.roomId);
     socket.join(roomId);
-    socket.room = roomId;
+    socket.roomId = roomId;
     io.to(roomId).emit("response", {
       status: "success",
       users: DATA[roomId].users,
+      data: DATA[roomId],
     });
   });
 
   socket.on("room", () => {
-    socket.emit("response", { status: "success", room_id: socket.id });
+    socket.emit("response", { status: "success", room_id: socket.roomId });
   });
 
   socket.on("disconnect", () => {
-    const id = socket.room;
+    const id = socket.roomId;
     if (DATA[id]) {
       --DATA[id].users;
       io.to(id).emit("response", { status: "success", users: DATA[id].users });
