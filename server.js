@@ -93,6 +93,7 @@ io.on("connection", (socket) => {
     console.log("JOin ", id);
     ++DATA[id].users;
     socket.join(id);
+    socket.room = id;
     io.to(id).emit("user", DATA[id].users);
   });
 
@@ -101,8 +102,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    DATA.users = io.engine.clientsCount;
-    // socket.broadcast.emit("success", { status: "success", data: DATA });
-    console.log("Client disconnected");
+    const id = socket.room;
+    --DATA[id].users;
+    io.to(id).emit("user", DATA[id].users);
+    console.log("Client disconnected from room", id);
   });
 });
