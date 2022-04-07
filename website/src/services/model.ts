@@ -7,6 +7,7 @@ export interface DataValueType {
   lastUpdate: number;
   value: string;
   users: number;
+  room: string;
 }
 
 export interface SuccessDataResponseType {

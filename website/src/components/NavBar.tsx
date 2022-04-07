@@ -19,9 +19,9 @@ const NavBar: React.FC<NavBarProps> = ({
   return (
     <nav
       className="navbar navbar-dark bg-dark position-fixed"
-      style={{ maxHeight: "10vh", top: "0", width: "100%" }}
+      style={{ height: "3rem", top: "0", width: "100%" }}
     >
-      <a className="navbar-brand" href="/" style={{ fontSize: "3vh" }}>
+      <a className="navbar-brand" href="/" style={{ fontSize: "1.2rem" }}>
         {document.title}
       </a>
       <div style={{ fontSize: "1.2rem" }}>

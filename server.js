@@ -8,8 +8,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 const DATA = {
-  lastUpdate: new Date().getTime(),
-  value: "",
+  // lastUpdate: new Date().getTime(),
+  // value: "",
   users: 0,
 };
 
@@ -44,26 +44,60 @@ io.on("connection", (socket) => {
   console.log("Client connected");
   DATA.users = io.engine.clientsCount;
 
-  socket.broadcast.emit("success", { status: "success", data: DATA });
+  if (!DATA[socket.id]) {
+    DATA[socket.id] = {
+      value: "",
+      lastUpdate: "",
+    };
+  }
+
+  // socket.broadcast.emit("success", { status: "success", data: DATA });
+  io.to(socket.id).emit("success", {
+    status: "success",
+    data: DATA[socket.id],
+  });
 
   socket.on("updateText", (data) => {
     const lastUpdate = data.lastUpdate;
     const value = data.value;
+    const room = data.room;
+    if (!room) return;
 
-    if (DATA.lastUpdate < lastUpdate) {
-      DATA.value = value;
-      DATA.lastUpdate = lastUpdate;
+    if (DATA[room].lastUpdate < lastUpdate) {
+      DATA[room].value = value;
+      DATA[room].lastUpdate = lastUpdate;
     }
-    socket.broadcast.emit("success", { status: "success", data: DATA });
+
+    io.to(room).emit("success", {
+      status: "success",
+      data: DATA[room],
+    });
+
+    // socket.broadcast.emit("success", { status: "success", data: DATA });
   });
 
-  socket.on("getText", () => {
-    socket.emit("success", { status: "success", data: DATA });
+  socket.on("getText", (data) => {
+    const room = data.room;
+    if (!room) return;
+    // socket.emit("success", { status: "success", data: DATA });
+    io.to(room).emit("success", {
+      status: "success",
+      data: DATA[room],
+    });
+  });
+
+  socket.on("join", (id) => {
+    console.log("JOin ", id);
+    socket.join(id);
+  });
+
+  socket.on("room", () => {
+    socket.emit("room", socket.id);
   });
 
   socket.on("disconnect", () => {
     DATA.users = io.engine.clientsCount;
-    socket.broadcast.emit("success", { status: "success", data: DATA });
+    // socket.broadcast.emit("success", { status: "success", data: DATA });
     console.log("Client disconnected");
   });
 });
