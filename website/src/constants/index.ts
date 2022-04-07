@@ -15,7 +15,6 @@ export const defaultDataValue: DataValueType = {
   lastUpdate: new Date().getTime(),
   value: "",
   users: 0,
-  room: "",
 };
 
 const prod = {
