@@ -8,7 +8,7 @@ interface TextAreaProps {
 
 const TextArea: React.FC<TextAreaProps> = ({ handleChange, value, theme }) => {
   return (
-    <div style={{ height: "100vh" }}>
+    <div style={{ height: "20rem" }}>
       <textarea
         name="data"
         id="dataContainer"

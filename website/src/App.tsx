@@ -15,6 +15,7 @@ import ConnectingBanner from "./components/ConnectingBanner";
 const App = () => {
   const [data, setData] = useState<DataValueType>(defaultDataValue);
   const [isServerConnected, setIsServerConnected] = useState(false);
+  const [room, setRoom] = useState("");
   const [theme, setTheme] = useState<ThemeType>(themeColor.light);
   const [socket, setSocket] = useState<Socket>();
 
@@ -24,7 +25,7 @@ const App = () => {
 
     const _socket = io(config.BASE_URL);
     setSocket(_socket);
-    _socket.emit("getText");
+    _socket.emit("getText", { room: room });
     _socket.on("success", (response: SuccessDataResponseType) => {
       if (data.lastUpdate !== response.data.lastUpdate) {
         setData((prev) => {
@@ -36,6 +37,12 @@ const App = () => {
           return _prev;
         });
       }
+    });
+
+    _socket.on("room", (response) => {
+      console.log("R ", response);
+
+      setRoom(response);
     });
 
     _socket.on("connect", () => {
@@ -55,6 +62,7 @@ const App = () => {
       const _prev = { ...prev };
       _prev.value = value;
       _prev.lastUpdate = new Date().getTime();
+      _prev.room = room;
       if (socket) socket.emit("updateText", _prev);
       return _prev;
     });
@@ -84,6 +92,21 @@ const App = () => {
     navigator.clipboard.writeText(data.value);
   };
 
+  const handleRoomChange = (e: any) => {
+    const value = e.target.value;
+    setRoom(value);
+  };
+
+  const handleRoomJoin = () => {
+    console.log("Room ", room);
+
+    if (room === "") {
+      if (socket) socket.emit("room", "");
+    } else {
+      if (socket) socket.emit("join", room);
+    }
+  };
+
   return (
     <div>
       {isServerConnected ? (
@@ -97,6 +120,11 @@ const App = () => {
               handleCopyAll,
             }}
           />
+          <div style={{ marginTop: "3rem" }}></div>
+          <div>
+            Room Id : <input value={room} onChange={handleRoomChange} />
+            <button onClick={handleRoomJoin}>Join</button>
+          </div>
           <TextArea {...{ handleChange, theme, value: data.value }} />
         </>
       ) : (
