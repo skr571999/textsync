@@ -27,6 +27,7 @@ const App = () => {
     const _socket = io(config.BASE_URL);
     setSocket(_socket);
     _socket.emit("getText", { room: room });
+    _socket.emit("room", "");
 
     _socket.on("response", (response: SuccessDataResponseType) => {
       console.log("R ", response);
