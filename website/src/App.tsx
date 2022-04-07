@@ -27,30 +27,33 @@ const App = () => {
     const _socket = io(config.BASE_URL);
     setSocket(_socket);
     _socket.emit("getText", { room: room });
-    _socket.on("success", (response: SuccessDataResponseType) => {
-      if (data.lastUpdate !== response.data.lastUpdate) {
-        setData((prev) => {
-          const _prev = { ...prev };
-          _prev.value = response.data.value;
-          _prev.lastUpdate = response.data.lastUpdate;
-          _prev.users = response.data.users;
 
-          return _prev;
-        });
-
-        setUser(response.data.users);
-      }
-    });
-
-    _socket.on("room", (response) => {
+    _socket.on("response", (response: SuccessDataResponseType) => {
       console.log("R ", response);
 
-      setRoom(response);
-    });
+      if (response.status === "success") {
+        // to update user
+        if (typeof response.users === "number") {
+          setUser(response.users);
+        }
+        // to update room
+        if (response.room_id) {
+          setRoom(response.room_id);
+        }
+        // To update text
+        if (response.data && data.lastUpdate !== response.data.lastUpdate) {
+          setData((prev) => {
+            const _prev = { ...prev };
+            _prev.value = response.data?.value || "";
+            _prev.lastUpdate = response.data?.lastUpdate || 0;
+            _prev.users = response.data?.users || 0;
 
-    _socket.on("user", (response) => {
-      console.log("User ", response);
-      setUser(response);
+            return _prev;
+          });
+
+          setUser(response.data.users);
+        }
+      }
     });
 
     _socket.on("connect", () => {
@@ -70,8 +73,7 @@ const App = () => {
       const _prev = { ...prev };
       _prev.value = value;
       _prev.lastUpdate = new Date().getTime();
-      _prev.room = room;
-      if (socket) socket.emit("updateText", _prev);
+      if (socket) socket.emit("updateText", { ..._prev, room });
       return _prev;
     });
   };

@@ -17,21 +17,8 @@ const DATA = {
 
 const PORT = process.env.PORT || 8000;
 
-app.get("/api", async (req, res) => {
+app.get("/", async (req, res) => {
   res.send({ message: "Server Running ..." });
-});
-
-app.get("/api/data", async (req, res) => {
-  res.send({ status: "success", data: DATA });
-});
-
-app.post("/api/data", async (req, res) => {
-  console.log("Body : ", req.body);
-
-  DATA.value = req.body.value;
-  DATA.lastUpdate = req.body.lastUpdate;
-
-  res.send({ status: "success", data: DATA });
 });
 
 const server = app.listen(PORT, () => console.log(`Serving on ${PORT}`));
@@ -44,7 +31,6 @@ const io = socketIO(server, {
 
 io.on("connection", (socket) => {
   console.log("Client connected");
-  // DATA.users = io.engine.clientsCount;
 
   if (!DATA[socket.id]) {
     DATA[socket.id] = {
@@ -54,8 +40,7 @@ io.on("connection", (socket) => {
     };
   }
 
-  // socket.broadcast.emit("success", { status: "success", data: DATA });
-  io.to(socket.id).emit("success", {
+  io.to(socket.id).emit("response", {
     status: "success",
     data: DATA[socket.id],
   });
@@ -71,19 +56,17 @@ io.on("connection", (socket) => {
       DATA[room].lastUpdate = lastUpdate;
     }
 
-    io.to(room).emit("success", {
+    io.to(room).emit("response", {
       status: "success",
       data: DATA[room],
     });
-
-    // socket.broadcast.emit("success", { status: "success", data: DATA });
   });
 
   socket.on("getText", (data) => {
     const room = data.room;
     if (!room) return;
-    // socket.emit("success", { status: "success", data: DATA });
-    io.to(room).emit("success", {
+
+    io.to(room).emit("response", {
       status: "success",
       data: DATA[room],
     });
@@ -94,17 +77,19 @@ io.on("connection", (socket) => {
     ++DATA[id].users;
     socket.join(id);
     socket.room = id;
-    io.to(id).emit("user", DATA[id].users);
+    io.to(id).emit("response", { status: "success", users: DATA[id].users });
   });
 
   socket.on("room", () => {
-    socket.emit("room", socket.id);
+    socket.emit("response", { status: "success", room_id: socket.id });
   });
 
   socket.on("disconnect", () => {
     const id = socket.room;
-    --DATA[id].users;
-    io.to(id).emit("user", DATA[id].users);
+    if (DATA[id]) {
+      --DATA[id].users;
+      io.to(id).emit("response", { status: "success", users: DATA[id].users });
+    }
     console.log("Client disconnected from room", id);
   });
 });
