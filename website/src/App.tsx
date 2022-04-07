@@ -16,6 +16,7 @@ const App = () => {
   const [data, setData] = useState<DataValueType>(defaultDataValue);
   const [isServerConnected, setIsServerConnected] = useState(false);
   const [room, setRoom] = useState("");
+  const [user, setUser] = useState(0);
   const [theme, setTheme] = useState<ThemeType>(themeColor.light);
   const [socket, setSocket] = useState<Socket>();
 
@@ -36,6 +37,8 @@ const App = () => {
 
           return _prev;
         });
+
+        setUser(response.data.users);
       }
     });
 
@@ -43,6 +46,11 @@ const App = () => {
       console.log("R ", response);
 
       setRoom(response);
+    });
+
+    _socket.on("user", (response) => {
+      console.log("User ", response);
+      setUser(response);
     });
 
     _socket.on("connect", () => {
@@ -115,7 +123,7 @@ const App = () => {
             {...{
               handleToggleTheme,
               theme,
-              users: data.users,
+              users: user,
               handleClearAll,
               handleCopyAll,
             }}
