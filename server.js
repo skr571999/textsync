@@ -8,9 +8,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 const DATA = {
-  // lastUpdate: new Date().getTime(),
-  // value: "",
-  users: 0,
+  room_id: {
+    value: "",
+    lastUpdate: "",
+    users: 0,
+  },
 };
 
 const PORT = process.env.PORT || 8000;
@@ -42,12 +44,13 @@ const io = socketIO(server, {
 
 io.on("connection", (socket) => {
   console.log("Client connected");
-  DATA.users = io.engine.clientsCount;
+  // DATA.users = io.engine.clientsCount;
 
   if (!DATA[socket.id]) {
     DATA[socket.id] = {
       value: "",
       lastUpdate: "",
+      users: 1,
     };
   }
 
@@ -88,7 +91,9 @@ io.on("connection", (socket) => {
 
   socket.on("join", (id) => {
     console.log("JOin ", id);
+    ++DATA[id].users;
     socket.join(id);
+    io.to(id).emit("user", DATA[id].users);
   });
 
   socket.on("room", () => {
