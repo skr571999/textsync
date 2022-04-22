@@ -165,6 +165,7 @@ const App = () => {
       )}
       {currentModal === "NewSessionJoin" && (
         <NewRoomJoinModal
+          openSessionInfo={openSessionInfo}
           handleRoomJoin={handleRoomJoin}
           closeModal={closeModal}
         />

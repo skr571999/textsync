@@ -3,3 +3,99 @@ textarea:focus,
 select:focus {
   outline: none;
 }
+
+img {
+  width: 30px;
+  height: 30px;
+}
+
+button {
+  border: none;
+  color: white;
+  background: transparent;
+}
+
+.userCount {
+  position: relative;
+  top: -0.6rem;
+  font-size: 0.9rem;
+  font-weight: bold;
+  left: -0.1rem;
+}
+.my-modal-background {
+  background-image: linear-gradient(to bottom, white, black);
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.my-modal-container {
+  background-color: black;
+  height: 400px;
+  width: 90%;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.my-modal-content {
+  color: white;
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.my-modal-content h3 {
+  margin: 2rem 0 6rem 0;
+}
+
+.close-btn {
+  display: flex;
+  justify-content: end;
+}
+.justify-space-between {
+  justify-content: space-between;
+}
+
+.custom-btn {
+  background-color: white;
+  color: black;
+  border-radius: 5px;
+  height: 50px;
+  width: 280px;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.roomIdInput input {
+  width: 300px;
+  height: 40px;
+  margin: 2rem 0 3rem 0;
+  border-radius: 5px;
+}
+
+.settings-container {
+  padding: 0 4rem;
+}
+
+.settings-container > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2rem;
+  font-size: 1.2rem;
+}
+
+.settings-container > div p {
+  margin: 0;
+}
+
+.alpha {
+  background-color: #b70000;
+  color: white;
+  position: relative;
+  font-size: 0.8rem;
+  border-radius: 5px;
+  padding: 0 0.1rem;
+  top: -0.8rem;
+}
