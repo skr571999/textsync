@@ -10,15 +10,27 @@ import {
   ThemeType,
 } from "./services/model";
 import { config, defaultDataValue, themeColor } from "./constants";
-import ConnectingBanner from "./components/ConnectingBanner";
+import ConnectingModal from "./components/ConnectingModal";
+import NewRoomJoinModal from "./components/NewRoomJoinModal";
+import SettingsModal from "./components/SettingsModal";
+import RoomInfoModal from "./components/RoomInfoModal";
+
+type CurrentModalType =
+  | ""
+  | "SessionInfo"
+  | "NewSessionJoin"
+  | "Settings"
+  | "Connecting";
 
 const App = () => {
   const [data, setData] = useState<DataValueType>(defaultDataValue);
-  const [isServerConnected, setIsServerConnected] = useState(false);
   const [room, setRoom] = useState("");
   const [user, setUser] = useState(0);
   const [theme, setTheme] = useState<ThemeType>(themeColor.light);
   const [socket, setSocket] = useState<Socket>();
+
+  const [currentModal, setCurrentModal] =
+    useState<CurrentModalType>("Connecting");
 
   useEffect(() => {
     const _theme = localStorage.getItem("theme");
@@ -58,11 +70,11 @@ const App = () => {
     });
 
     _socket.on("connect", () => {
-      setIsServerConnected(true);
+      setCurrentModal("");
     });
 
     _socket.on("disconnect", () => {
-      setIsServerConnected(false);
+      setCurrentModal("Connecting");
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -103,44 +115,61 @@ const App = () => {
     navigator.clipboard.writeText(data.value);
   };
 
-  const handleRoomChange = (e: any) => {
-    const value = e.target.value;
-    setRoom(value);
-  };
+  const handleRoomJoin = (roomId: string) => {
+    console.log("Room ", roomId);
 
-  const handleRoomJoin = () => {
-    console.log("Room ", room);
-
-    if (room === "") {
+    if (roomId === "") {
       if (socket) socket.emit("room", "");
     } else {
-      if (socket) socket.emit("join", room);
+      if (socket) socket.emit("join", roomId);
+      closeModal();
     }
+  };
+
+  const openSessionInfo = () => {
+    setCurrentModal("SessionInfo");
+  };
+
+  const openSettings = () => {
+    setCurrentModal("Settings");
+  };
+
+  const openNewSessionJoin = () => {
+    setCurrentModal("NewSessionJoin");
+  };
+
+  const closeModal = () => {
+    setCurrentModal("");
   };
 
   return (
     <div>
-      {isServerConnected ? (
+      {currentModal === "Connecting" && <ConnectingModal />}
+      {currentModal === "" && (
         <>
           <NavBar
-            {...{
-              handleToggleTheme,
-              theme,
-              users: user,
-              handleClearAll,
-              handleCopyAll,
-            }}
+            userCount={user}
+            openSessionInfo={openSessionInfo}
+            openSettings={openSettings}
           />
           <div style={{ marginTop: "3rem" }}></div>
-          <div>
-            Room Id : <input value={room} onChange={handleRoomChange} />
-            <button onClick={handleRoomJoin}>Join</button>
-          </div>
           <TextArea {...{ handleChange, theme, value: data.value }} />
         </>
-      ) : (
-        <ConnectingBanner />
       )}
+      {currentModal === "SessionInfo" && (
+        <RoomInfoModal
+          openNewRoomJoin={openNewSessionJoin}
+          roomId={room}
+          closeModal={closeModal}
+        />
+      )}
+      {currentModal === "NewSessionJoin" && (
+        <NewRoomJoinModal
+          handleRoomJoin={handleRoomJoin}
+          closeModal={closeModal}
+        />
+      )}
+      {currentModal === "Settings" && <SettingsModal closeModal={closeModal} />}
     </div>
   );
 };

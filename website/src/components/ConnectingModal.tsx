@@ -1,8 +1,8 @@
 import React from "react";
 
-interface ConnectingBannerProps {}
+interface ConnectingModalProps {}
 
-const ConnectingBanner: React.FC<ConnectingBannerProps> = () => {
+const ConnectingModal: React.FC<ConnectingModalProps> = () => {
   return (
     <div className="m-5 p-5 text-center">
       <h2>Trying to Connect...</h2>
@@ -10,4 +10,4 @@ const ConnectingBanner: React.FC<ConnectingBannerProps> = () => {
   );
 };
 
-export default ConnectingBanner;
+export default ConnectingModal;
