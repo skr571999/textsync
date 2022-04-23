@@ -104,3 +104,23 @@ button {
   padding: 0 0.1rem;
   top: -0.8rem;
 }
+.nav-action-container {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+#dataContainer {
+  padding-top: 6rem;
+}
+
+@media screen and (min-width: 500px) {
+  .nav-action-container {
+    width: initial;
+    display: initial;
+    justify-self: initial;
+  }
+  #dataContainer {
+    padding-top: 4rem;
+  }
+}

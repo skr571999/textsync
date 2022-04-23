@@ -25,7 +25,7 @@ const NavBar: React.FC<NavBarProps> = ({
     <nav
       className="navbar navbar-light"
       style={{
-        height: "4rem",
+        minHeight: "4rem",
         top: "0",
         width: "100%",
         backgroundColor: "black",
@@ -40,7 +40,7 @@ const NavBar: React.FC<NavBarProps> = ({
         {document.title}
         <span className="alpha">alpha</span>
       </a>
-      <div style={{ fontSize: "1.2rem" }}>
+      <div className="nav-action-container">
         <button
           onClick={cutAllText}
           style={{ marginRight: "10px" }}

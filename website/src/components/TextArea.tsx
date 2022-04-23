@@ -27,7 +27,6 @@ const TextArea: React.FC<TextAreaProps> = ({
         style={{
           minWidth: "100%",
           minHeight: "99%",
-          paddingTop: "5rem",
           resize: "none",
           border: "none",
           zIndex: 0,
