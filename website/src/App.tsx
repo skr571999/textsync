@@ -6,15 +6,16 @@ import NavBar from "./components/NavBar";
 import TextArea from "./components/TextArea";
 import {
   DataValueType,
+  SettingsType,
   SuccessDataResponseType,
-  ThemeType,
 } from "./services/model";
 import {
   config,
   defaultDataValue,
-  defaultTheme,
+  defaultSettings,
   themeColor,
 } from "./constants";
+
 import ConnectingModal from "./components/ConnectingModal";
 import NewRoomJoinModal from "./components/NewRoomJoinModal";
 import SettingsModal from "./components/SettingsModal";
@@ -31,16 +32,22 @@ const App = () => {
   const [data, setData] = useState<DataValueType>(defaultDataValue);
   const [room, setRoom] = useState("");
   const [user, setUser] = useState(0);
-  const [theme, setTheme] = useState<ThemeType>(defaultTheme);
-  const [fontSize, setFontSize] = useState(16);
   const [socket, setSocket] = useState<Socket>();
+  const [settings, setSettings] = useState<SettingsType>(defaultSettings);
 
   const [currentModal, setCurrentModal] =
     useState<CurrentModalType>("Connecting");
 
+  const setSettingsFromLocalStorage = () => {
+    const _settings: SettingsType = JSON.parse(
+      localStorage.getItem("settings") || JSON.stringify(defaultSettings)
+    );
+
+    setSettings(_settings);
+  };
+
   useEffect(() => {
-    const _theme = localStorage.getItem("theme");
-    // if (_theme === "dark") setTheme(themeColor.dark);
+    setSettingsFromLocalStorage();
 
     const _socket = io(config.BASE_URL);
     setSocket(_socket);
@@ -97,17 +104,8 @@ const App = () => {
     });
   };
 
-  const handleToggleTheme = () => {
-    // setTheme({ backgroundColor: theme.color, color: theme.backgroundColor });
-    // const _theme = localStorage.getItem("theme");
-    // if (_theme === "dark") {
-    //   localStorage.setItem("theme", "light");
-    // } else {
-    //   localStorage.setItem("theme", "dark");
-    // }
-  };
-
-  const handleClearAll = () => {
+  const cutAllText = () => {
+    copyAllText();
     setData((prev) => {
       const _prev = { ...prev };
       _prev.value = "";
@@ -117,7 +115,7 @@ const App = () => {
     });
   };
 
-  const handleCopyAll = () => {
+  const copyAllText = () => {
     navigator.clipboard.writeText(data.value);
   };
 
@@ -128,6 +126,7 @@ const App = () => {
       if (socket) socket.emit("room", "");
     } else {
       if (socket) socket.emit("join", roomId);
+      socket?.emit("room", "");
       closeModal();
     }
   };
@@ -150,17 +149,21 @@ const App = () => {
 
   return (
     <div className="mainContainer">
+      <NavBar
+        userCount={user}
+        openSessionInfo={openSessionInfo}
+        openSettings={openSettings}
+        copyAllText={copyAllText}
+        cutAllText={cutAllText}
+      />
       {currentModal === "Connecting" && <ConnectingModal />}
       {currentModal === "" && (
         <>
-          <NavBar
-            userCount={user}
-            openSessionInfo={openSessionInfo}
-            openSettings={openSettings}
-          />
           <TextArea
-            {...{ handleChange, theme, value: data.value }}
-            fontSize={fontSize}
+            value={data.value}
+            handleChange={handleChange}
+            fontSize={settings.fontSize}
+            themeColor={themeColor[settings.theme]}
           />
         </>
       )}
@@ -181,10 +184,8 @@ const App = () => {
       {currentModal === "Settings" && (
         <SettingsModal
           closeModal={closeModal}
-          theme={theme}
-          setTheme={setTheme}
-          fontSize={fontSize}
-          setFontSize={setFontSize}
+          settings={settings}
+          setSettings={setSettings}
         />
       )}
     </div>
