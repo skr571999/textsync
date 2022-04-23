@@ -2,43 +2,30 @@ import React from "react";
 
 interface TextAreaProps {
   theme: any;
-  fontSize: number;
   value: string;
   handleChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
-const TextArea: React.FC<TextAreaProps> = ({
-  handleChange,
-  value,
-  theme,
-  fontSize,
-}) => {
+const TextArea: React.FC<TextAreaProps> = ({ handleChange, value, theme }) => {
   return (
-    <div
-      style={{
-        height: "100%",
-        padding: ".3rem",
-        backgroundImage: "linear-gradient(to bottom, white, black)",
-      }}
-    >
+    <div style={{ height: "100vh" }}>
       <textarea
         name="data"
         id="dataContainer"
         style={{
           minWidth: "100%",
-          minHeight: "99%",
-          paddingTop: "5rem",
+          minHeight: "100%",
+          paddingTop: "10vh",
           resize: "none",
           border: "none",
           zIndex: 0,
-          fontSize: `${fontSize}px`,
-          // ...theme,
+          ...theme,
         }}
         cols={30}
         rows={10}
         value={value}
         onChange={handleChange}
-        placeholder="Type here"
+        placeholder="Type Here"
       ></textarea>
     </div>
   );

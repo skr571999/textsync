@@ -1,46 +1,51 @@
 import React from "react";
-
-import People from "../images/People.png";
-import Settings from "../images/Settings.png";
+import { ThemeType } from "../services/model";
 
 interface NavBarProps {
-  openSettings: () => void;
-  openSessionInfo: () => void;
-  userCount: number;
+  handleToggleTheme: () => void;
+  handleClearAll: () => void;
+  handleCopyAll: () => void;
+  theme: ThemeType;
+  users: number;
 }
 
 const NavBar: React.FC<NavBarProps> = ({
-  userCount,
-  openSessionInfo,
-  openSettings,
+  handleToggleTheme,
+  theme,
+  users,
+  handleClearAll,
+  handleCopyAll,
 }) => {
   return (
     <nav
-      className="navbar navbar-light"
-      style={{
-        height: "4rem",
-        top: "0",
-        width: "100%",
-        backgroundColor: "black",
-        position: "fixed",
-      }}
+      className="navbar navbar-dark bg-dark position-fixed"
+      style={{ maxHeight: "10vh", top: "0", width: "100%" }}
     >
-      <a
-        className="navbar-brand"
-        href="/"
-        style={{ fontSize: "1.5rem", color: "white" }}
-      >
+      <a className="navbar-brand" href="/" style={{ fontSize: "3vh" }}>
         {document.title}
-        <span className="alpha">alpha</span>
       </a>
       <div style={{ fontSize: "1.2rem" }}>
-        <button onClick={openSessionInfo} style={{ marginRight: "10px" }}>
-          <img src={People} alt={People} />
-          <span className="userCount">{userCount}</span>
-        </button>
-        <button onClick={openSettings}>
-          <img src={Settings} alt="Settings" />
-        </button>
+        <span
+          onClick={handleClearAll}
+          style={{ cursor: "pointer", marginRight: "1rem" }}
+        >
+          🧹
+        </span>
+        <span
+          onClick={handleCopyAll}
+          style={{ cursor: "pointer", marginRight: "1rem" }}
+        >
+          ✂️
+        </span>
+        <span style={{ color: "white", border: "1px solid grey" }}>
+          {users} 🧑
+        </span>
+        <span
+          onClick={handleToggleTheme}
+          style={{ cursor: "pointer", marginRight: "1rem" }}
+        >
+          {theme.color === "#26262c" ? "🌙" : "☀"}
+        </span>
       </div>
     </nav>
   );

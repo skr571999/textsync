@@ -9,78 +9,41 @@ import {
   SuccessDataResponseType,
   ThemeType,
 } from "./services/model";
-import {
-  config,
-  defaultDataValue,
-  defaultTheme,
-  themeColor,
-} from "./constants";
-import ConnectingModal from "./components/ConnectingModal";
-import NewRoomJoinModal from "./components/NewRoomJoinModal";
-import SettingsModal from "./components/SettingsModal";
-import RoomInfoModal from "./components/RoomInfoModal";
-
-type CurrentModalType =
-  | ""
-  | "SessionInfo"
-  | "NewSessionJoin"
-  | "Settings"
-  | "Connecting";
+import { config, defaultDataValue, themeColor } from "./constants";
+import ConnectingBanner from "./components/ConnectingBanner";
 
 const App = () => {
   const [data, setData] = useState<DataValueType>(defaultDataValue);
-  const [room, setRoom] = useState("");
-  const [user, setUser] = useState(0);
-  const [theme, setTheme] = useState<ThemeType>(defaultTheme);
-  const [fontSize, setFontSize] = useState(16);
+  const [isServerConnected, setIsServerConnected] = useState(false);
+  const [theme, setTheme] = useState<ThemeType>(themeColor.light);
   const [socket, setSocket] = useState<Socket>();
-
-  const [currentModal, setCurrentModal] =
-    useState<CurrentModalType>("Connecting");
 
   useEffect(() => {
     const _theme = localStorage.getItem("theme");
-    // if (_theme === "dark") setTheme(themeColor.dark);
+    if (_theme === "dark") setTheme(themeColor.dark);
 
     const _socket = io(config.BASE_URL);
     setSocket(_socket);
-    _socket.emit("getText", { room: room });
-    _socket.emit("room", "");
+    _socket.emit("getText");
+    _socket.on("success", (response: SuccessDataResponseType) => {
+      if (data.lastUpdate !== response.data.lastUpdate) {
+        setData((prev) => {
+          const _prev = { ...prev };
+          _prev.value = response.data.value;
+          _prev.lastUpdate = response.data.lastUpdate;
+          _prev.users = response.data.users;
 
-    _socket.on("response", (response: SuccessDataResponseType) => {
-      console.log("R ", response);
-
-      if (response.status === "success") {
-        // to update user
-        if (typeof response.users === "number") {
-          setUser(response.users);
-        }
-        // to update room
-        if (response.room_id) {
-          setRoom(response.room_id);
-        }
-        // To update text
-        if (response.data && data.lastUpdate !== response.data.lastUpdate) {
-          setData((prev) => {
-            const _prev = { ...prev };
-            _prev.value = response.data?.value || "";
-            _prev.lastUpdate = response.data?.lastUpdate || 0;
-            _prev.users = response.data?.users || 0;
-
-            return _prev;
-          });
-
-          setUser(response.data.users);
-        }
+          return _prev;
+        });
       }
     });
 
     _socket.on("connect", () => {
-      setCurrentModal("");
+      setIsServerConnected(true);
     });
 
     _socket.on("disconnect", () => {
-      setCurrentModal("Connecting");
+      setIsServerConnected(false);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -92,19 +55,19 @@ const App = () => {
       const _prev = { ...prev };
       _prev.value = value;
       _prev.lastUpdate = new Date().getTime();
-      if (socket) socket.emit("updateText", { ..._prev, room });
+      if (socket) socket.emit("updateText", _prev);
       return _prev;
     });
   };
 
   const handleToggleTheme = () => {
-    // setTheme({ backgroundColor: theme.color, color: theme.backgroundColor });
-    // const _theme = localStorage.getItem("theme");
-    // if (_theme === "dark") {
-    //   localStorage.setItem("theme", "light");
-    // } else {
-    //   localStorage.setItem("theme", "dark");
-    // }
+    setTheme({ backgroundColor: theme.color, color: theme.backgroundColor });
+    const _theme = localStorage.getItem("theme");
+    if (_theme === "dark") {
+      localStorage.setItem("theme", "light");
+    } else {
+      localStorage.setItem("theme", "dark");
+    }
   };
 
   const handleClearAll = () => {
@@ -121,71 +84,23 @@ const App = () => {
     navigator.clipboard.writeText(data.value);
   };
 
-  const handleRoomJoin = (roomId: string) => {
-    console.log("Room ", roomId);
-
-    if (roomId === "") {
-      if (socket) socket.emit("room", "");
-    } else {
-      if (socket) socket.emit("join", roomId);
-      closeModal();
-    }
-  };
-
-  const openSessionInfo = () => {
-    setCurrentModal("SessionInfo");
-  };
-
-  const openSettings = () => {
-    setCurrentModal("Settings");
-  };
-
-  const openNewSessionJoin = () => {
-    setCurrentModal("NewSessionJoin");
-  };
-
-  const closeModal = () => {
-    setCurrentModal("");
-  };
-
   return (
-    <div className="mainContainer">
-      {currentModal === "Connecting" && <ConnectingModal />}
-      {currentModal === "" && (
+    <div>
+      {isServerConnected ? (
         <>
           <NavBar
-            userCount={user}
-            openSessionInfo={openSessionInfo}
-            openSettings={openSettings}
+            {...{
+              handleToggleTheme,
+              theme,
+              users: data.users,
+              handleClearAll,
+              handleCopyAll,
+            }}
           />
-          <TextArea
-            {...{ handleChange, theme, value: data.value }}
-            fontSize={fontSize}
-          />
+          <TextArea {...{ handleChange, theme, value: data.value }} />
         </>
-      )}
-      {currentModal === "SessionInfo" && (
-        <RoomInfoModal
-          openNewRoomJoin={openNewSessionJoin}
-          roomId={room}
-          closeModal={closeModal}
-        />
-      )}
-      {currentModal === "NewSessionJoin" && (
-        <NewRoomJoinModal
-          openSessionInfo={openSessionInfo}
-          handleRoomJoin={handleRoomJoin}
-          closeModal={closeModal}
-        />
-      )}
-      {currentModal === "Settings" && (
-        <SettingsModal
-          closeModal={closeModal}
-          theme={theme}
-          setTheme={setTheme}
-          fontSize={fontSize}
-          setFontSize={setFontSize}
-        />
+      ) : (
+        <ConnectingBanner />
       )}
     </div>
   );
