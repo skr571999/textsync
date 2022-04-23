@@ -1,7 +1,9 @@
-export interface ThemeType {
-  color: string;
-  backgroundColor: string;
-}
+// export interface ThemeType {
+//   color: string;
+//   backgroundColor: string;
+// }
+
+export type ThemeType = "default" | "light" | "dark";
 
 export interface DataValueType {
   lastUpdate: number;

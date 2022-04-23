@@ -22,6 +22,7 @@ const NavBar: React.FC<NavBarProps> = ({
         top: "0",
         width: "100%",
         backgroundColor: "black",
+        position: "fixed",
       }}
     >
       <a

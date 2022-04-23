@@ -1,4 +1,4 @@
-import { DataValueType } from "../services/model";
+import { DataValueType, ThemeType } from "../services/model";
 
 export const themeColor = {
   light: {
@@ -10,6 +10,8 @@ export const themeColor = {
     color: "#eaeaea",
   },
 };
+
+export const defaultTheme: ThemeType = "default";
 
 export const defaultDataValue: DataValueType = {
   lastUpdate: new Date().getTime(),
