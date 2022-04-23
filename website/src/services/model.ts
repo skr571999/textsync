@@ -1,9 +1,10 @@
-// export interface ThemeType {
-//   color: string;
-//   backgroundColor: string;
-// }
-
 export type ThemeType = "default" | "light" | "dark";
+
+export interface SettingsType {
+  theme: ThemeType;
+  fontSize: number;
+  saveLocal: boolean;
+}
 
 export interface DataValueType {
   lastUpdate: number;

@@ -1,7 +1,7 @@
 import React from "react";
 
 interface TextAreaProps {
-  theme: any;
+  themeColor: any;
   fontSize: number;
   value: string;
   handleChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
@@ -10,7 +10,7 @@ interface TextAreaProps {
 const TextArea: React.FC<TextAreaProps> = ({
   handleChange,
   value,
-  theme,
+  themeColor,
   fontSize,
 }) => {
   return (
@@ -32,7 +32,7 @@ const TextArea: React.FC<TextAreaProps> = ({
           border: "none",
           zIndex: 0,
           fontSize: `${fontSize}px`,
-          // ...theme,
+          ...themeColor,
         }}
         cols={30}
         rows={10}

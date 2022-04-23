@@ -56,7 +56,7 @@ button {
 
 .close-btn {
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
 }
 .justify-space-between {
   justify-content: space-between;
