@@ -126,6 +126,7 @@ const App = () => {
       if (socket) socket.emit("room", "");
     } else {
       if (socket) socket.emit("join", roomId);
+      socket?.emit("room", "");
       closeModal();
     }
   };

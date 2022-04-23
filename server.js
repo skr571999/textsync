@@ -1,33 +1,31 @@
 const express = require("express");
 const cors = require("cors");
 const socketIO = require("socket.io");
+
+const {
+  addNewRoom,
+  getRoomData,
+  isRoomExists,
+  addUserToRoom,
+  getRoomUsers,
+  removeUserFromRoom,
+  updateRoomData,
+  store,
+} = require("./server/store");
+
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-const DATA = {
-  room_id: {
-    value: "",
-    lastUpdate: "",
-    users: 0,
-  },
-};
-
 const PORT = process.env.PORT || 8000;
 
-app.get("/", async (req, res) => {
+app.get("/", (req, res) => {
   res.send({ message: "Server Running ..." });
 });
 
 const server = app.listen(PORT, () => console.log(`Serving on ${PORT}`));
-
-const generateRandomText = (length) => {
-  return Math.random()
-    .toString(36)
-    .substring(2, 2 + length);
-};
 
 const io = socketIO(server, {
   cors: {
@@ -38,68 +36,54 @@ const io = socketIO(server, {
 io.on("connection", (socket) => {
   console.log("Client connected");
 
-  const roomId = generateRandomText(6);
-
-  if (!DATA[roomId]) {
-    DATA[roomId] = {
-      value: "",
-      lastUpdate: "",
-      users: 1,
-    };
-  }
+  const roomId = addNewRoom();
 
   socket.join(roomId);
   socket.roomId = roomId;
 
   socket.emit("response", {
     status: "success",
-    data: DATA[roomId],
+    data: getRoomData(roomId),
   });
 
   socket.on("updateText", (data) => {
-    const lastUpdate = data.lastUpdate;
-    const value = data.value;
-    const room = data.room;
-    if (!room) return;
+    const _roomId = updateRoomData(data);
 
-    if (DATA[room].lastUpdate < lastUpdate) {
-      DATA[room].value = value;
-      DATA[room].lastUpdate = lastUpdate;
-    }
-
-    socket.broadcast.to(room).emit("response", {
+    socket.broadcast.to(_roomId).emit("response", {
       status: "success",
-      data: DATA[room],
+      data: getRoomData(_roomId),
     });
   });
 
   socket.on("getText", (data) => {
-    const room = data.room;
-    if (!room) return;
+    const _roomId = data.room;
+    if (!_roomId) return;
 
-    io.to(room).emit("response", {
+    // Check here if we can use socket Id to send back
+    io.to(_roomId).emit("response", {
       status: "success",
-      data: DATA[room],
+      data: getRoomData(_roomId),
     });
   });
 
-  socket.on("join", (roomId) => {
-    console.log("JOin ", roomId);
-    if (!DATA[roomId]) {
-      DATA[roomId] = {
-        value: "",
-        lastUpdate: "",
-        users: 0,
-      };
+  socket.on("join", (_roomId) => {
+    console.log("Join ", _roomId);
+
+    if (!isRoomExists(_roomId)) {
+      console.log("Room not exists ", _roomId);
+      return;
     }
-    ++DATA[roomId].users;
-    socket.leave(socket.roomId);
-    socket.join(roomId);
-    socket.roomId = roomId;
-    io.to(roomId).emit("response", {
+
+    socket.leave(socket._roomId);
+    socket.join(_roomId);
+    socket.roomId = _roomId;
+
+    addUserToRoom(_roomId);
+
+    io.to(_roomId).emit("response", {
       status: "success",
-      users: DATA[roomId].users,
-      data: DATA[roomId],
+      users: getRoomUsers(_roomId),
+      data: getRoomData(_roomId),
     });
   });
 
@@ -108,11 +92,14 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    const id = socket.roomId;
-    if (DATA[id]) {
-      --DATA[id].users;
-      io.to(id).emit("response", { status: "success", users: DATA[id].users });
+    const _roomId = socket.roomId;
+    if (isRoomExists(_roomId)) {
+      removeUserFromRoom(_roomId);
+      io.to(_roomId).emit("response", {
+        status: "success",
+        users: getRoomUsers(_roomId),
+      });
     }
-    console.log("Client disconnected from room", id);
+    console.log("Client disconnected from room", _roomId);
   });
 });
