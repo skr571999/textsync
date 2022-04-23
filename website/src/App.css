@@ -1,3 +1,7 @@
+.mainContainer {
+  height: 100vh;
+}
+
 input:focus,
 textarea:focus,
 select:focus {
@@ -35,6 +39,7 @@ button {
   background-color: black;
   height: 400px;
   width: 90%;
+  max-width: 30rem;
   border-radius: 10px;
   padding: 1rem;
 }
