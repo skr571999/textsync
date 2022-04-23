@@ -1,51 +1,46 @@
 import React from "react";
-import { ThemeType } from "../services/model";
+
+import People from "../images/People.png";
+import Settings from "../images/Settings.png";
 
 interface NavBarProps {
-  handleToggleTheme: () => void;
-  handleClearAll: () => void;
-  handleCopyAll: () => void;
-  theme: ThemeType;
-  users: number;
+  openSettings: () => void;
+  openSessionInfo: () => void;
+  userCount: number;
 }
 
 const NavBar: React.FC<NavBarProps> = ({
-  handleToggleTheme,
-  theme,
-  users,
-  handleClearAll,
-  handleCopyAll,
+  userCount,
+  openSessionInfo,
+  openSettings,
 }) => {
   return (
     <nav
-      className="navbar navbar-dark bg-dark position-fixed"
-      style={{ maxHeight: "10vh", top: "0", width: "100%" }}
+      className="navbar navbar-light"
+      style={{
+        height: "4rem",
+        top: "0",
+        width: "100%",
+        backgroundColor: "black",
+        position: "fixed",
+      }}
     >
-      <a className="navbar-brand" href="/" style={{ fontSize: "3vh" }}>
+      <a
+        className="navbar-brand"
+        href="/"
+        style={{ fontSize: "1.5rem", color: "white" }}
+      >
         {document.title}
+        <span className="alpha">alpha</span>
       </a>
       <div style={{ fontSize: "1.2rem" }}>
-        <span
-          onClick={handleClearAll}
-          style={{ cursor: "pointer", marginRight: "1rem" }}
-        >
-          🧹
-        </span>
-        <span
-          onClick={handleCopyAll}
-          style={{ cursor: "pointer", marginRight: "1rem" }}
-        >
-          ✂️
-        </span>
-        <span style={{ color: "white", border: "1px solid grey" }}>
-          {users} 🧑
-        </span>
-        <span
-          onClick={handleToggleTheme}
-          style={{ cursor: "pointer", marginRight: "1rem" }}
-        >
-          {theme.color === "#26262c" ? "🌙" : "☀"}
-        </span>
+        <button onClick={openSessionInfo} style={{ marginRight: "10px" }}>
+          <img src={People} alt={People} />
+          <span className="userCount">{userCount}</span>
+        </button>
+        <button onClick={openSettings}>
+          <img src={Settings} alt="Settings" />
+        </button>
       </div>
     </nav>
   );

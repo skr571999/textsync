@@ -8,31 +8,26 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 const DATA = {
-  lastUpdate: new Date().getTime(),
-  value: "",
-  users: 0,
+  room_id: {
+    value: "",
+    lastUpdate: "",
+    users: 0,
+  },
 };
 
 const PORT = process.env.PORT || 8000;
 
-app.get("/api", async (req, res) => {
+app.get("/", async (req, res) => {
   res.send({ message: "Server Running ..." });
 });
 
-app.get("/api/data", async (req, res) => {
-  res.send({ status: "success", data: DATA });
-});
-
-app.post("/api/data", async (req, res) => {
-  console.log("Body : ", req.body);
-
-  DATA.value = req.body.value;
-  DATA.lastUpdate = req.body.lastUpdate;
-
-  res.send({ status: "success", data: DATA });
-});
-
 const server = app.listen(PORT, () => console.log(`Serving on ${PORT}`));
+
+const generateRandomText = (length) => {
+  return Math.random()
+    .toString(36)
+    .substring(2, 2 + length);
+};
 
 const io = socketIO(server, {
   cors: {
@@ -42,28 +37,82 @@ const io = socketIO(server, {
 
 io.on("connection", (socket) => {
   console.log("Client connected");
-  DATA.users = io.engine.clientsCount;
 
-  socket.broadcast.emit("success", { status: "success", data: DATA });
+  const roomId = generateRandomText(6);
+
+  if (!DATA[roomId]) {
+    DATA[roomId] = {
+      value: "",
+      lastUpdate: "",
+      users: 1,
+    };
+  }
+
+  socket.join(roomId);
+  socket.roomId = roomId;
+
+  socket.emit("response", {
+    status: "success",
+    data: DATA[roomId],
+  });
 
   socket.on("updateText", (data) => {
     const lastUpdate = data.lastUpdate;
     const value = data.value;
+    const room = data.room;
+    if (!room) return;
 
-    if (DATA.lastUpdate < lastUpdate) {
-      DATA.value = value;
-      DATA.lastUpdate = lastUpdate;
+    if (DATA[room].lastUpdate < lastUpdate) {
+      DATA[room].value = value;
+      DATA[room].lastUpdate = lastUpdate;
     }
-    socket.broadcast.emit("success", { status: "success", data: DATA });
+
+    socket.broadcast.to(room).emit("response", {
+      status: "success",
+      data: DATA[room],
+    });
   });
 
-  socket.on("getText", () => {
-    socket.emit("success", { status: "success", data: DATA });
+  socket.on("getText", (data) => {
+    const room = data.room;
+    if (!room) return;
+
+    io.to(room).emit("response", {
+      status: "success",
+      data: DATA[room],
+    });
+  });
+
+  socket.on("join", (roomId) => {
+    console.log("JOin ", roomId);
+    if (!DATA[roomId]) {
+      DATA[roomId] = {
+        value: "",
+        lastUpdate: "",
+        users: 0,
+      };
+    }
+    ++DATA[roomId].users;
+    socket.leave(socket.roomId);
+    socket.join(roomId);
+    socket.roomId = roomId;
+    io.to(roomId).emit("response", {
+      status: "success",
+      users: DATA[roomId].users,
+      data: DATA[roomId],
+    });
+  });
+
+  socket.on("room", () => {
+    socket.emit("response", { status: "success", room_id: socket.roomId });
   });
 
   socket.on("disconnect", () => {
-    DATA.users = io.engine.clientsCount;
-    socket.broadcast.emit("success", { status: "success", data: DATA });
-    console.log("Client disconnected");
+    const id = socket.roomId;
+    if (DATA[id]) {
+      --DATA[id].users;
+      io.to(id).emit("response", { status: "success", users: DATA[id].users });
+    }
+    console.log("Client disconnected from room", id);
   });
 });
