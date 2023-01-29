@@ -4,7 +4,7 @@ import People from '../images/People.png';
 import Settings from '../images/Settings.png';
 import GitHub from '../images/GitHub.png';
 
-const NavBar = ({ usersCount, openSessionInfo, openSettings, copyAllText, cutAllText }) => {
+const NavBar = ({ usersCount, openNewSessionJoin, openSettings, copyAllText, cutAllText, roomId }) => {
     return (
         <nav
             className="navbar navbar-light"
@@ -16,9 +16,11 @@ const NavBar = ({ usersCount, openSessionInfo, openSettings, copyAllText, cutAll
                 position: 'fixed',
             }}
         >
-            <a className="navbar-brand" href="/" style={{ fontSize: '1.5rem', color: 'white' }}>
+            <span className="navbar-brand" style={{ fontSize: '1.5rem', color: 'white' }}>
                 {document.title}
-                <span className="alpha">alpha</span>
+            </span>
+            <a href="https://github.com/skrmain/LiveNotepad" target="_blank" title="GitHub" rel="noopener noreferrer">
+                <img src={GitHub} alt="GitHub" />
             </a>
             <div className="nav-action-container">
                 <button onClick={cutAllText} style={{ marginRight: '10px' }} title="Cut all text">
@@ -27,16 +29,13 @@ const NavBar = ({ usersCount, openSessionInfo, openSettings, copyAllText, cutAll
                 <button onClick={copyAllText} style={{ marginRight: '10px' }} title="Copy all text">
                     <img src={Copy} alt="Copy" style={{ width: '25px', height: '25px' }} />
                 </button>
-                <button onClick={openSessionInfo} style={{ marginRight: '10px' }} title="People">
+                <button onClick={openNewSessionJoin} style={{ marginRight: '10px' }} title="People">
                     <img src={People} alt="People" />
-                    <span className="userCount">{usersCount}</span>
+                    <span className="usersCount">{usersCount}</span>({roomId})
                 </button>
                 <button style={{ marginRight: '10px' }} onClick={openSettings} title="settings">
                     <img src={Settings} alt="Settings" />
                 </button>
-                <a href="https://github.com/skrmain/LiveNotepad" target="_blank" title="GitHub" rel="noopener noreferrer">
-                    <img src={GitHub} alt="GitHub" />
-                </a>
             </div>
         </nav>
     );

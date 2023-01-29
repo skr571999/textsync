@@ -1,7 +1,7 @@
 const http = require('http');
 const socketIO = require('socket.io');
 
-const { addNewRoom, getRoomData, isRoomExists, addUserToRoom, getRoomUsers, removeUserFromRoom, updateRoomData } = require('./server/store');
+const { addNewRoom, getRoomData, isRoomExists, addUserToRoom, removeUserFromRoom, updateRoomData } = require('./server/store');
 
 const PORT = process.env.PORT || 8000;
 
@@ -32,13 +32,13 @@ io.on('connection', (socket) => {
             addNewRoom(_roomId);
         }
 
-        socket.leave(socket._roomId);
+        removeUserFromRoom(socket.roomId);
+        socket.leave(socket.roomId);
         socket.join(_roomId);
         socket.roomId = _roomId;
-
         addUserToRoom(_roomId);
 
-        io.to(_roomId).emit('response', { status: true, data: { roomId: socket.roomId, ...getRoomData(socket.roomId) } });
+        io.to(_roomId).emit('response', { status: true, data: { roomId: _roomId, ...getRoomData(socket.roomId) } });
     });
 
     socket.on('roomData', () => {

@@ -14,17 +14,19 @@ const store = {
 // },
 
 const addNewRoom = (roomId = generateRandomText(6)) => {
-    if (!store[roomId]) {
-        store[roomId] = { ...defaultRoomValue };
-    }
+    if (isRoomExists(roomId)) return false;
 
-    return roomId;
+    store[roomId] = { ...defaultRoomValue };
+    return true;
 };
 
+const getRoomData = (roomId) => store[roomId];
+
+const isRoomExists = (roomId) => !!store[roomId];
+
 const updateRoomData = (roomId, data) => {
-    const lastUpdate = data.lastUpdate;
-    const value = data.value;
     if (!isRoomExists(roomId)) return false;
+    const { lastUpdate, value } = data;
 
     if (store[roomId].lastUpdate < lastUpdate) {
         store[roomId].value = value;
@@ -35,24 +37,16 @@ const updateRoomData = (roomId, data) => {
 };
 
 const addUserToRoom = (roomId) => {
+    if (!isRoomExists(roomId)) return false;
     ++store[roomId].usersCount;
     return true;
 };
 
 const removeUserFromRoom = (roomId) => {
-    if (store[roomId]) {
-        --store[roomId].usersCount;
-        return true;
-    } else {
-        return false;
-    }
+    if (!isRoomExists(roomId)) return false;
+    --store[roomId].usersCount;
+    return true;
 };
-
-const getRoomData = (roomId) => store[roomId];
-
-const getRoomUsersCount = (roomId) => store[roomId].usersCount;
-
-const isRoomExists = (roomId) => !!store[roomId];
 
 module.exports = {
     addNewRoom,
@@ -61,6 +55,5 @@ module.exports = {
     isRoomExists,
     addUserToRoom,
     removeUserFromRoom,
-    getRoomUsers: getRoomUsersCount,
     updateRoomData,
 };
