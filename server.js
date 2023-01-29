@@ -1,105 +1,58 @@
-const express = require("express");
-const cors = require("cors");
-const socketIO = require("socket.io");
+const http = require('http');
+const socketIO = require('socket.io');
 
-const {
-  addNewRoom,
-  getRoomData,
-  isRoomExists,
-  addUserToRoom,
-  getRoomUsers,
-  removeUserFromRoom,
-  updateRoomData,
-  store,
-} = require("./server/store");
-
-const app = express();
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+const { addNewRoom, getRoomData, isRoomExists, addUserToRoom, getRoomUsers, removeUserFromRoom, updateRoomData } = require('./server/store');
 
 const PORT = process.env.PORT || 8000;
 
-app.get("/", (req, res) => {
-  res.send({ message: "Server Running ..." });
-});
+const server = http.createServer((req, res) => res.end('Ok'));
+const io = socketIO(server, { cors: { origin: '*' } });
 
-const server = app.listen(PORT, () => console.log(`Serving on ${PORT}`));
+io.on('connection', (socket) => {
+    console.log('Client connected');
 
-const io = socketIO(server, {
-  cors: {
-    origin: "*",
-  },
-});
-
-io.on("connection", (socket) => {
-  console.log("Client connected");
-
-  const roomId = addNewRoom();
-
-  socket.join(roomId);
-  socket.roomId = roomId;
-
-  socket.emit("response", {
-    status: "success",
-    data: getRoomData(roomId),
-  });
-
-  socket.on("updateText", (data) => {
-    const _roomId = updateRoomData(data);
-
-    socket.broadcast.to(_roomId).emit("response", {
-      status: "success",
-      data: getRoomData(_roomId),
-    });
-  });
-
-  socket.on("getText", (data) => {
-    const _roomId = data.room;
-    if (!_roomId) return;
-
+    // NOTE: By default socket will join 'default' room
+    socket.roomId = 'default';
+    socket.join(socket.roomId);
+    addUserToRoom(socket.roomId);
     // Check here if we can use socket Id to send back
-    io.to(_roomId).emit("response", {
-      status: "success",
-      data: getRoomData(_roomId),
+    io.to(socket.roomId).emit('response', { status: true, data: { roomId: socket.roomId, ...getRoomData(socket.roomId) } });
+
+    socket.on('updateText', (data) => {
+        updateRoomData(socket.roomId, data);
+
+        socket.broadcast.to(socket.roomId).emit('response', { status: true, data: { roomId: socket.roomId, ...getRoomData(socket.roomId) } });
     });
-  });
 
-  socket.on("join", (_roomId) => {
-    console.log("Join ", _roomId);
+    socket.on('join', (_roomId) => {
+        console.log('Join ', _roomId);
 
-    if (!isRoomExists(_roomId)) {
-      console.log("Room not exists ", _roomId);
-      return;
-    }
+        if (!isRoomExists(_roomId)) {
+            console.log('Room not exists ', _roomId);
+            addNewRoom(_roomId);
+        }
 
-    socket.leave(socket._roomId);
-    socket.join(_roomId);
-    socket.roomId = _roomId;
+        socket.leave(socket._roomId);
+        socket.join(_roomId);
+        socket.roomId = _roomId;
 
-    addUserToRoom(_roomId);
+        addUserToRoom(_roomId);
 
-    io.to(_roomId).emit("response", {
-      status: "success",
-      users: getRoomUsers(_roomId),
-      data: getRoomData(_roomId),
+        io.to(_roomId).emit('response', { status: true, data: { roomId: socket.roomId, ...getRoomData(socket.roomId) } });
     });
-  });
 
-  socket.on("room", () => {
-    socket.emit("response", { status: "success", room_id: socket.roomId });
-  });
+    socket.on('roomData', () => {
+        socket.emit('response', { status: true, data: { roomId: socket.roomId, ...getRoomData(socket.roomId) } });
+    });
 
-  socket.on("disconnect", () => {
-    const _roomId = socket.roomId;
-    if (isRoomExists(_roomId)) {
-      removeUserFromRoom(_roomId);
-      io.to(_roomId).emit("response", {
-        status: "success",
-        users: getRoomUsers(_roomId),
-      });
-    }
-    console.log("Client disconnected from room", _roomId);
-  });
+    socket.on('disconnect', () => {
+        const _roomId = socket.roomId;
+        if (isRoomExists(_roomId)) {
+            removeUserFromRoom(_roomId);
+            io.to(_roomId).emit('response', { status: true, data: { roomId: socket.roomId, ...getRoomData(socket.roomId) } });
+        }
+        console.log('Client disconnected from room', _roomId);
+    });
 });
+
+server.listen(PORT, () => console.log(`Listening on ${PORT}`));

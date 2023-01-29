@@ -13,11 +13,10 @@ import RoomInfoModal from './components/RoomInfoModal';
 
 const App = () => {
     const [data, setData] = useState(defaultDataValue);
-    const [room, setRoom] = useState('');
-    const [user, setUser] = useState(0);
+    const [roomId, setRoomId] = useState('');
+    const [usersCount, setUsersCount] = useState(0);
     const [socket, setSocket] = useState();
     const [settings, setSettings] = useState(defaultSettings);
-
     const [currentModal, setCurrentModal] = useState('Connecting');
 
     const setSettingsFromLocalStorage = () => {
@@ -26,52 +25,6 @@ const App = () => {
         setSettings(_settings);
     };
 
-    useEffect(() => {
-        setSettingsFromLocalStorage();
-
-        const _socket = io(config.BASE_URL);
-        setSocket(_socket);
-        _socket.emit('getText', { room: room });
-        _socket.emit('room', '');
-
-        _socket.on('response', (response) => {
-            console.log('R ', response);
-
-            if (response.status === 'success') {
-                // to update user
-                if (typeof response.users === 'number') {
-                    setUser(response.users);
-                }
-                // to update room
-                if (response.room_id) {
-                    setRoom(response.room_id);
-                }
-                // To update text
-                if (response.data && data.lastUpdate !== response.data.lastUpdate) {
-                    setData((prev) => {
-                        const _prev = { ...prev };
-                        _prev.value = response.data?.value || '';
-                        _prev.lastUpdate = response.data?.lastUpdate || 0;
-                        _prev.users = response.data?.users || 0;
-
-                        return _prev;
-                    });
-
-                    setUser(response.data.users);
-                }
-            }
-        });
-
-        _socket.on('connect', () => {
-            setCurrentModal('');
-        });
-
-        _socket.on('disconnect', () => {
-            setCurrentModal('Connecting');
-        });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
     const handleChange = (event) => {
         const { value } = event.target;
 
@@ -79,7 +32,7 @@ const App = () => {
             const _prev = { ...prev };
             _prev.value = value;
             _prev.lastUpdate = new Date().getTime();
-            if (socket) socket.emit('updateText', { ..._prev, room });
+            if (socket) socket.emit('updateText', { ..._prev, room: roomId });
             return _prev;
         });
     };
@@ -100,13 +53,9 @@ const App = () => {
     };
 
     const handleRoomJoin = (roomId) => {
-        console.log('Room ', roomId);
-
-        if (roomId === '') {
-            if (socket) socket.emit('room', '');
-        } else {
+        console.log('New Room ', roomId);
+        if (roomId) {
             if (socket) socket.emit('join', roomId);
-            socket?.emit('room', '');
             closeModal();
         }
     };
@@ -119,10 +68,45 @@ const App = () => {
 
     const closeModal = () => setCurrentModal('');
 
+    useEffect(() => {
+        setSettingsFromLocalStorage();
+
+        const _socket = io(config.BASE_URL);
+        setSocket(_socket);
+        _socket.emit('roomData', '');
+
+        _socket.on('response', (response) => {
+            console.log('R ', response);
+            if (response.status && response.data) {
+                const responseData = response.data;
+                if (responseData.roomId) {
+                    setRoomId(responseData.roomId);
+                }
+                if (typeof responseData.usersCount === 'number') {
+                    setUsersCount(responseData.usersCount);
+                }
+                if (data.lastUpdate !== responseData.lastUpdate) {
+                    setData((prev) => {
+                        const _prev = { ...prev };
+                        _prev.value = responseData.value || '';
+                        _prev.lastUpdate = responseData.lastUpdate || 0;
+                        _prev.usersCount = responseData.usersCount || 0;
+
+                        return _prev;
+                    });
+                }
+            }
+        });
+
+        _socket.on('connect', () => setCurrentModal(''));
+        _socket.on('disconnect', () => setCurrentModal('Connecting'));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     return (
         <div className="mainContainer">
             <NavBar
-                userCount={user}
+                usersCount={usersCount}
                 openSessionInfo={openSessionInfo}
                 openSettings={openSettings}
                 copyAllText={copyAllText}
@@ -132,7 +116,7 @@ const App = () => {
             {currentModal === '' && (
                 <TextArea value={data.value} handleChange={handleChange} fontSize={settings.fontSize} themeColor={themeColor[settings.theme]} />
             )}
-            {currentModal === 'SessionInfo' && <RoomInfoModal openNewRoomJoin={openNewSessionJoin} roomId={room} closeModal={closeModal} />}
+            {currentModal === 'SessionInfo' && <RoomInfoModal openNewRoomJoin={openNewSessionJoin} roomId={roomId} closeModal={closeModal} />}
             {currentModal === 'NewSessionJoin' && (
                 <NewRoomJoinModal openSessionInfo={openSessionInfo} handleRoomJoin={handleRoomJoin} closeModal={closeModal} />
             )}

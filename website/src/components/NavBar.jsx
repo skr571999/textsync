@@ -4,7 +4,7 @@ import People from '../images/People.png';
 import Settings from '../images/Settings.png';
 import GitHub from '../images/GitHub.png';
 
-const NavBar = ({ userCount, openSessionInfo, openSettings, copyAllText, cutAllText }) => {
+const NavBar = ({ usersCount, openSessionInfo, openSettings, copyAllText, cutAllText }) => {
     return (
         <nav
             className="navbar navbar-light"
@@ -29,12 +29,12 @@ const NavBar = ({ userCount, openSessionInfo, openSettings, copyAllText, cutAllT
                 </button>
                 <button onClick={openSessionInfo} style={{ marginRight: '10px' }} title="People">
                     <img src={People} alt="People" />
-                    <span className="userCount">{userCount}</span>
+                    <span className="userCount">{usersCount}</span>
                 </button>
                 <button style={{ marginRight: '10px' }} onClick={openSettings} title="settings">
                     <img src={Settings} alt="Settings" />
                 </button>
-                <a href="https://github.com/skrmain/LiveCollab" target="_blank" title="GitHub" rel="noopener noreferrer">
+                <a href="https://github.com/skrmain/LiveNotepad" target="_blank" title="GitHub" rel="noopener noreferrer">
                     <img src={GitHub} alt="GitHub" />
                 </a>
             </div>
