@@ -1,34 +1,14 @@
-# LiveCollab
+# LiveNotepad
 
-For having a live Collaborating. Build using `ReactJS` and `ExpressJS` with websocket
-
-## Cloning and Installing
+## Notes
 
 ```sh
-# to clone the REPO
-git clone REPO_URL
-cd FOLDER_NAME
-
-# for installing server dependencies
+# For server
 npm install
+npm run start:dev
 
-# for installing website dependencies
+# For website
 cd website
-yarn install
-```
-
-## Starting App Locally
-
-```sh
-# To Start ExpressJS server
-npm run dev
-
-# To Start ReactJS server
-cd website
+npm install
 npm start
 ```
-
-## Deployment
-
-- Website - Netlify
-- Server - Heroku
