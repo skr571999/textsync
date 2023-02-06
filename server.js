@@ -9,7 +9,7 @@ const server = http.createServer((req, res) => res.end('Ok'));
 const io = socketIO(server, { cors: { origin: '*' } });
 
 io.on('connection', (socket) => {
-    console.log('Client connected');
+    console.log('Client connected', socket.id);
 
     // NOTE: By default socket will join 'default' room
     socket.roomId = 'default';
@@ -24,32 +24,30 @@ io.on('connection', (socket) => {
         socket.broadcast.to(socket.roomId).emit('response', { status: true, data: { roomId: socket.roomId, ...getRoomData(socket.roomId) } });
     });
 
-    socket.on('join', (_roomId) => {
-        console.log('Join ', _roomId);
+    socket.on('join', (newRoomId) => {
+        console.log('Join ', newRoomId);
 
-        if (!isRoomExists(_roomId)) {
-            console.log('Room not exists ', _roomId);
-            addNewRoom(_roomId);
+        if (!isRoomExists(newRoomId)) {
+            console.log('Room not exists ', newRoomId);
+            addNewRoom(newRoomId);
         }
 
-        removeUserFromRoom(socket.roomId);
-        socket.leave(socket.roomId);
-        socket.join(_roomId);
-        socket.roomId = _roomId;
-        addUserToRoom(_roomId);
+        const oldRoomId = socket.roomId;
+        removeUserFromRoom(oldRoomId);
+        socket.leave(oldRoomId);
+        socket.join(newRoomId);
+        socket.roomId = newRoomId;
+        addUserToRoom(newRoomId);
 
-        io.to(_roomId).emit('response', { status: true, data: { roomId: _roomId, ...getRoomData(socket.roomId) } });
-    });
-
-    socket.on('roomData', () => {
-        socket.emit('response', { status: true, data: { roomId: socket.roomId, ...getRoomData(socket.roomId) } });
+        io.to(newRoomId).emit('response', { status: true, data: { roomId: newRoomId, ...getRoomData(newRoomId) } });
+        io.to(oldRoomId).emit('response', { status: true, data: { roomId: oldRoomId, ...getRoomData(oldRoomId) } });
     });
 
     socket.on('disconnect', () => {
         const _roomId = socket.roomId;
         if (isRoomExists(_roomId)) {
             removeUserFromRoom(_roomId);
-            io.to(_roomId).emit('response', { status: true, data: { roomId: socket.roomId, ...getRoomData(socket.roomId) } });
+            io.to(_roomId).emit('response', { status: true, data: { roomId: _roomId, ...getRoomData(socket.roomId) } });
         }
         console.log('Client disconnected from room', _roomId);
     });
