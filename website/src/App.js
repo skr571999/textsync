@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 
 import './App.css';
@@ -24,10 +24,10 @@ const App = () => {
         setSettings(_settings);
     };
 
-    const handleChange = (event) => {
+    const handleChange = event => {
         const { value } = event.target;
 
-        setData((prev) => {
+        setData(prev => {
             const _prev = { ...prev };
             _prev.value = value;
             _prev.lastUpdate = new Date().getTime();
@@ -38,7 +38,7 @@ const App = () => {
 
     const cutAllText = () => {
         copyAllText();
-        setData((prev) => {
+        setData(prev => {
             const _prev = { ...prev };
             _prev.value = '';
             _prev.lastUpdate = new Date().getTime();
@@ -47,7 +47,7 @@ const App = () => {
         });
     };
 
-    const handleRoomJoin = (roomId) => {
+    const handleRoomJoin = roomId => {
         if (roomId) {
             if (socket) socket.emit('join', roomId);
             closeModal();
@@ -56,30 +56,28 @@ const App = () => {
 
     const copyAllText = () => navigator.clipboard.writeText(data.value);
 
-    // const openSessionInfo = () => setCurrentModal('SessionInfo');
-
     const openSettings = () => setCurrentModal('Settings');
 
     const openNewSessionJoin = () => setCurrentModal('NewSessionJoin');
 
     const closeModal = () => setCurrentModal('');
 
-    const handleResponse = (response) => {
-        console.log('R ', response);
+    const handleResponse = response => {
         if (response.status && response.data) {
             const responseData = response.data;
-            if (responseData.roomId) {
+            console.log('R ', responseData);
+            const { usersCount: _usersCount, roomId: _roomId, lastUpdate: _lastUpdate, value: _value } = responseData;
+            if (_roomId && _roomId !== roomId) {
                 setRoomId(responseData.roomId);
             }
-            if (typeof responseData.usersCount === 'number') {
+            if (_usersCount && _usersCount !== usersCount) {
                 setUsersCount(responseData.usersCount);
             }
-            if (data.lastUpdate !== responseData.lastUpdate) {
-                setData((prev) => {
+            if (data.lastUpdate !== _lastUpdate) {
+                setData(prev => {
                     const _prev = { ...prev };
-                    _prev.value = responseData.value || '';
-                    _prev.lastUpdate = responseData.lastUpdate || 0;
-                    _prev.usersCount = responseData.usersCount || 0;
+                    _prev.value = _value || '';
+                    _prev.lastUpdate = _lastUpdate || 0;
 
                     return _prev;
                 });
@@ -92,7 +90,6 @@ const App = () => {
 
         const _socket = io(config.BASE_URL);
         setSocket(_socket);
-        _socket.emit('roomData', '');
         _socket.on('response', handleResponse);
         _socket.on('connect', () => setCurrentModal(''));
         _socket.on('disconnect', () => setCurrentModal('Connecting'));
@@ -100,7 +97,7 @@ const App = () => {
     }, []);
 
     return (
-        <div className="mainContainer">
+        <div style={{ height: '100vh' }}>
             <NavBar
                 usersCount={usersCount}
                 roomId={roomId}

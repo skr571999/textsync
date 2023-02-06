@@ -1,17 +1,9 @@
 import React from 'react';
 
-// import { SettingsType } from '../services/model';
-
 import Close from './../images/Close.png';
 
-// interface SettingsModalProps {
-//   closeModal: () => void;
-//   setSettings: (settings: SettingsType) => void;
-//   settings: SettingsType;
-// }
-
 const SettingsModal = ({ closeModal, setSettings, settings }) => {
-    const handleChange = (e) => {
+    const handleChange = e => {
         const name = e.target.name;
         const value = e.target.value;
 

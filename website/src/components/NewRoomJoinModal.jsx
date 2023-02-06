@@ -4,11 +4,7 @@ import Close from './../images/Close.png';
 
 const NewRoomJoinModal = ({ handleRoomJoin, closeModal, roomId }) => {
     const [newRoomId, setNewRoomId] = useState(roomId);
-
-    const handleNewRoomIdChange = (e) => {
-        const value = e.target.value;
-        setNewRoomId(value);
-    };
+    const handleNewRoomIdChange = e => setNewRoomId(e.target.value);
 
     return (
         <div className="my-modal-background">
@@ -23,7 +19,7 @@ const NewRoomJoinModal = ({ handleRoomJoin, closeModal, roomId }) => {
                     <div className="roomIdInput">
                         <input value={newRoomId} placeholder="Enter room Id" onChange={handleNewRoomIdChange} />
                     </div>
-                    <button className="custom-btn" onClick={() => handleRoomJoin(newRoomId)}>
+                    <button className="join-btn" onClick={() => handleRoomJoin(newRoomId)}>
                         Join
                     </button>
                 </div>

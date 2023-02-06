@@ -8,15 +8,7 @@ const ConnectingModal = () => {
             <div className="my-modal-container">
                 <div className="my-modal-content">
                     <h2>Connecting...</h2>
-                    <img
-                        src={Connecting}
-                        alt="Connecting"
-                        style={{
-                            width: '60px',
-                            height: '60px',
-                            marginTop: '4rem',
-                        }}
-                    />
+                    <img src={Connecting} alt="Connecting" style={{ width: '60px', height: '60px', marginTop: '4rem' }} />
                 </div>
             </div>
         </div>
