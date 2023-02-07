@@ -32,7 +32,7 @@ const Settings = ({ closeModal, setSettings, settings }) => {
                     <div>
                         <p>Theme</p>
                         <select name="theme" id="theme" value={settings.theme} onInput={handleChange}>
-                            <option value="default">Default</option>
+                            {/* <option value="default">Default</option> */}
                             <option value="light">Light</option>
                             <option value="dark">Dark</option>
                         </select>
