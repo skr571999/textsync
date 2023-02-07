@@ -51,14 +51,13 @@ const SettingsModal = ({ closeModal, setSettings, settings }) => {
             </div> */}
                         <div>
                             <p>Font size</p>
-                            <input
-                                style={{ width: '4rem', textAlign: 'right' }}
-                                type="number"
-                                name="fontSize"
-                                onInput={handleChange}
-                                id="fontSize"
-                                value={settings.fontSize}
-                            />
+                            <select name="fontSize" id="fontSize" value={settings.fontSize} onInput={handleChange}>
+                                {[10, 14, 18, 22, 24].map(v => (
+                                    <option value={v} key={v}>
+                                        {v}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                     </div>
                 </div>
