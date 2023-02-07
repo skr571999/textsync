@@ -6,7 +6,7 @@ import People from '../images/People.png';
 import Settings from '../images/Settings.png';
 import GitHub from '../images/GitHub.png';
 
-const NavBar = ({ usersCount, openNewSessionJoin, openSettings, copyAllText, cutAllText, roomId }) => {
+const NavBar = ({ usersCount, openRoomInfo, openSettings, copyAllText, cutAllText, roomId }) => {
     return (
         <nav className="navbar navbar-light my-navbar">
             <span className="navbar-brand" style={{ fontSize: '1.5rem', color: 'white' }}>
@@ -22,7 +22,7 @@ const NavBar = ({ usersCount, openNewSessionJoin, openSettings, copyAllText, cut
                 <button onClick={copyAllText} title="Copy all text">
                     <img src={Copy} alt="Copy" style={{ width: '25px', height: '25px' }} />
                 </button>
-                <button onClick={openNewSessionJoin} title="People">
+                <button onClick={openRoomInfo} title="People">
                     <img src={People} alt="People" />
                     <span className="usersCount">{usersCount}</span>({roomId})
                 </button>
