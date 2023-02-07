@@ -1,7 +1,4 @@
-.mainContainer {
-    height: 100vh;
-}
-
+/* Common */
 input:focus,
 textarea:focus,
 select:focus {
@@ -19,6 +16,16 @@ button {
     background: transparent;
 }
 
+/* NavBar */
+
+.my-navbar {
+    min-height: 4rem;
+    top: 0;
+    width: 100%;
+    background-color: black;
+    position: fixed;
+}
+
 .usersCount {
     position: relative;
     top: -0.6rem;
@@ -26,6 +33,18 @@ button {
     font-weight: bold;
     left: -0.1rem;
 }
+
+.nav-action-container {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.nav-action-container button {
+    margin-right: 1rem;
+}
+
+/* My-Modal */
 
 .my-modal-background {
     background-image: linear-gradient(to bottom, white, black);
@@ -38,9 +57,9 @@ button {
 
 .my-modal-container {
     background-color: black;
-    height: 400px;
+    height: 20rem;
     width: 90%;
-    max-width: 30rem;
+    max-width: 25rem;
     border-radius: 10px;
     padding: 1rem;
 }
@@ -48,38 +67,40 @@ button {
 .my-modal-content {
     color: white;
     text-align: center;
-    margin-top: 3rem;
-}
-
-.my-modal-content h3 {
-    margin: 2rem 0 6rem 0;
+    margin-top: 1rem;
 }
 
 .close-btn {
     display: flex;
     justify-content: flex-end;
 }
-.justify-space-between {
-    justify-content: space-between;
+
+/* Room Info */
+.roomIdInput {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 3rem 1rem;
 }
 
-.custom-btn {
+.roomIdInput .join-btn {
     background-color: white;
     color: black;
     border-radius: 5px;
-    height: 50px;
-    width: 280px;
+    height: 2.5rem;
+    width: 5rem;
     font-size: 1.2rem;
     font-weight: bold;
 }
 
 .roomIdInput input {
-    width: 300px;
-    height: 40px;
-    margin: 2rem 0 3rem 0;
+    max-width: 10rem;
+    height: 2.5rem;
+    padding-left: 0.3rem;
     border-radius: 5px;
 }
 
+/* Settings */
 .settings-container {
     padding: 0 4rem;
 }
@@ -96,12 +117,6 @@ button {
     margin: 0;
 }
 
-.nav-action-container {
-    width: 100%;
-    display: flex;
-    justify-content: flex-end;
-}
-
 #dataContainer {
     padding-top: 6rem;
     min-width: 100%;
@@ -111,7 +126,7 @@ button {
     z-index: 0;
 }
 
-@media screen and (min-width: 500px) {
+@media screen and (min-width: 600px) {
     .nav-action-container {
         width: initial;
         display: initial;
@@ -119,5 +134,14 @@ button {
     }
     #dataContainer {
         padding-top: 4rem;
+    }
+}
+
+@media (orientation: landscape) {
+    .my-modal-container {
+        height: 15rem;
+    }
+    .my-modal-content {
+        margin-top: -1rem;
     }
 }

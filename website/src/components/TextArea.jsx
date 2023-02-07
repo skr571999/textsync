@@ -6,15 +6,15 @@ const TextArea = ({ handleChange, value, themeColor, fontSize }) => {
             style={{
                 height: '100%',
                 padding: '.3rem',
-                backgroundImage: 'linear-gradient(to bottom, white, black)',
+                backgroundImage: 'linear-gradient(to bottom, white, black)'
             }}
         >
             <textarea
                 name="data"
                 id="dataContainer"
                 style={{ fontSize: `${fontSize}px`, ...themeColor }}
-                cols={30}
-                rows={10}
+                // cols={30}
+                // rows={10}
                 value={value}
                 onChange={handleChange}
                 placeholder="Type here"
