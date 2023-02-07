@@ -75,11 +75,15 @@ button {
     justify-content: flex-end;
 }
 
-.justify-space-between {
-    justify-content: space-between;
+/* Room Info */
+.roomIdInput {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 3rem 1rem;
 }
 
-.join-btn {
+.roomIdInput .join-btn {
     background-color: white;
     color: black;
     border-radius: 5px;
@@ -90,13 +94,13 @@ button {
 }
 
 .roomIdInput input {
-    width: 300px;
-    height: 40px;
-    margin: 2rem 0 3rem 0;
+    max-width: 10rem;
+    height: 2.5rem;
     padding-left: 0.3rem;
     border-radius: 5px;
 }
 
+/* Settings */
 .settings-container {
     padding: 0 4rem;
 }
@@ -130,5 +134,14 @@ button {
     }
     #dataContainer {
         padding-top: 4rem;
+    }
+}
+
+@media (orientation: landscape) {
+    .my-modal-container {
+        height: 15rem;
+    }
+    .my-modal-content {
+        margin-top: -1rem;
     }
 }
